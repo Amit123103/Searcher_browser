@@ -22,20 +22,23 @@ class NavigationBar(QToolBar):
         style = self.style()
         
         # 1. Primary Navigation Actions
-        self.back_action = QAction(style.standardIcon(style.StandardPixmap.SP_ArrowBack), "Back", self)
-        self.back_action.setToolTip("Go back")
-        self.back_action.triggered.connect(self.navigate_back)
-        self.addAction(self.back_action)
+        self.back_btn = QToolButton(self)
+        self.back_btn.setObjectName("navBackBtn")
+        self.back_btn.setToolTip("Go back")
+        self.back_btn.clicked.connect(self.navigate_back)
+        self.addWidget(self.back_btn)
         
-        self.forward_action = QAction(style.standardIcon(style.StandardPixmap.SP_ArrowForward), "Forward", self)
-        self.forward_action.setToolTip("Go forward")
-        self.forward_action.triggered.connect(self.navigate_forward)
-        self.addAction(self.forward_action)
+        self.forward_btn = QToolButton(self)
+        self.forward_btn.setObjectName("navForwardBtn")
+        self.forward_btn.setToolTip("Go forward")
+        self.forward_btn.clicked.connect(self.navigate_forward)
+        self.addWidget(self.forward_btn)
         
-        self.reload_action = QAction(style.standardIcon(style.StandardPixmap.SP_BrowserReload), "Refresh", self)
-        self.reload_action.setToolTip("Reload page")
-        self.reload_action.triggered.connect(self.navigate_reload)
-        self.addAction(self.reload_action)
+        self.reload_btn = QToolButton(self)
+        self.reload_btn.setObjectName("navReloadBtn")
+        self.reload_btn.setToolTip("Reload page")
+        self.reload_btn.clicked.connect(self.navigate_reload)
+        self.addWidget(self.reload_btn)
         
         # 2. Address Bar (Expanding)
         self.url_bar = QLineEdit()
@@ -60,16 +63,18 @@ class NavigationBar(QToolBar):
         self.addWidget(spacer)
         
         # 3. Quick Tools
-        self.ai_toggle_action = QAction(QIcon(os.path.join(assets_dir, 'ai.svg')), "AI Assistant", self)
-        self.ai_toggle_action.setToolTip("Toggle AI Assistant")
-        self.ai_toggle_action.setCheckable(True)
-        self.ai_toggle_action.triggered.connect(self.toggle_ai_sidebar)
-        self.addAction(self.ai_toggle_action)
+        self.ai_btn = QToolButton(self)
+        self.ai_btn.setObjectName("navAiBtn")
+        self.ai_btn.setToolTip("Toggle AI Assistant")
+        self.ai_btn.setCheckable(True)
+        self.ai_btn.clicked.connect(self.toggle_ai_sidebar)
+        self.addWidget(self.ai_btn)
         
-        self.bookmark_action = QAction(QIcon(os.path.join(assets_dir, 'star.svg')), "Bookmark", self)
-        self.bookmark_action.setToolTip("Bookmark current page")
-        self.bookmark_action.triggered.connect(self.bookmark_page)
-        self.addAction(self.bookmark_action)
+        self.bookmark_btn = QToolButton(self)
+        self.bookmark_btn.setObjectName("navBookmarkBtn")
+        self.bookmark_btn.setToolTip("Bookmark current page")
+        self.bookmark_btn.clicked.connect(self.bookmark_page)
+        self.addWidget(self.bookmark_btn)
         
         # 4. Profile & Menu
         self.profile_btn = QToolButton(self)
@@ -88,12 +93,12 @@ class NavigationBar(QToolBar):
         """)
         self.addWidget(self.profile_btn)
         
-        menu_btn = QToolButton(self)
-        menu_btn.setIcon(QIcon(os.path.join(assets_dir, 'menu.svg')))
-        menu_btn.setToolTip("Customize and control")
-        menu_btn.clicked.connect(self.show_settings)
+        self.menu_btn = QToolButton(self)
+        self.menu_btn.setObjectName("navMenuBtn")
+        self.menu_btn.setToolTip("Customize and control")
+        self.menu_btn.clicked.connect(self.show_settings)
         
-        self.addWidget(menu_btn)
+        self.addWidget(self.menu_btn)
 
     def update_suggestions(self, history_records):
         self.completer_model.clear()

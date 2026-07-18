@@ -23,6 +23,13 @@ def get_dark_theme():
     QToolButton:hover {
         background: rgba(255, 255, 255, 0.1);
     }
+    QToolButton#navBackBtn { qproperty-icon: url(assets/icons/back_white.svg); }
+    QToolButton#navForwardBtn { qproperty-icon: url(assets/icons/forward_white.svg); }
+    QToolButton#navReloadBtn { qproperty-icon: url(assets/icons/reload_white.svg); }
+    QToolButton#navAiBtn { qproperty-icon: url(assets/icons/ai_white.svg); }
+    QToolButton#navBookmarkBtn { qproperty-icon: url(assets/icons/star_white.svg); }
+    QToolButton#navMenuBtn { qproperty-icon: url(assets/icons/menu_white.svg); }
+    
     QLineEdit {
         background-color: #20141a;
         color: #ffffff;
@@ -114,6 +121,23 @@ def get_light_theme():
         padding: 5px;
         spacing: 5px;
     }
+    QToolButton {
+        background: transparent;
+        border: none;
+        border-radius: 6px;
+        padding: 6px;
+        color: #202124;
+    }
+    QToolButton:hover {
+        background: rgba(0, 0, 0, 0.05);
+    }
+    QToolButton#navBackBtn { qproperty-icon: url(assets/icons/back_black.svg); }
+    QToolButton#navForwardBtn { qproperty-icon: url(assets/icons/forward_black.svg); }
+    QToolButton#navReloadBtn { qproperty-icon: url(assets/icons/reload_black.svg); }
+    QToolButton#navAiBtn { qproperty-icon: url(assets/icons/ai_black.svg); }
+    QToolButton#navBookmarkBtn { qproperty-icon: url(assets/icons/star_black.svg); }
+    QToolButton#navMenuBtn { qproperty-icon: url(assets/icons/menu_black.svg); }
+    
     QLineEdit {
         background-color: #ffffff;
         color: #202124;

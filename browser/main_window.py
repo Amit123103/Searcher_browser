@@ -212,7 +212,7 @@ class MainWindow(QMainWindow):
         self.ai_sidebar = AISidebar(self.ai_service, self)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.ai_sidebar)
         self.ai_sidebar.hide() # Hidden by default
-        self.ai_sidebar.visibilityChanged.connect(self.nav_bar.ai_toggle_action.setChecked)
+        self.ai_sidebar.visibilityChanged.connect(self.nav_bar.ai_btn.setChecked)
 
     def setup_menus(self):
         menu_bar = self.menuBar()
