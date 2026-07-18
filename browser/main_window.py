@@ -93,6 +93,20 @@ class MainWindow(QMainWindow):
         # Initialize Tabs
         self.tabs = BrowserTabWidget(self)
         
+        # Initialize Navigation Bar
+        self.nav_bar = NavigationBar(self)
+        
+        # Add Tabs first, then Toolbar (Custom layout order to match mockups)
+        self.layout.addWidget(self.tabs.tabBar())  # Extract just the tab bar
+        self.layout.addWidget(self.nav_bar)        # Put toolbar below tab bar
+        
+        # We need to add the stacked widget of the QTabWidget
+        # But QTabWidget doesn't expose it directly.
+        # So we add the entire QTabWidget, but we hide its internal tab bar,
+        # OR we just let QTabWidget handle it and set its TabPosition to North?
+        # Actually, extracting the tabBar() and adding it to the layout is a supported hack in PyQt!
+        self.layout.addWidget(self.tabs)
+        
         # Override the tabs method to use our specific profile
         original_add_tab = self.tabs.add_new_tab
         def new_add_tab(qurl=None, label="New Tab"):
