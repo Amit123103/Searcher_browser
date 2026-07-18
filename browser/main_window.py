@@ -1,6 +1,6 @@
 import os
 from PyQt6.QtWidgets import (QMainWindow, QVBoxLayout, QWidget, QStatusBar, QProgressBar, 
-                             QMessageBox, QApplication, QMenu, QDockWidget)
+                             QMessageBox, QApplication, QMenu, QDockWidget, QSizePolicy)
 from PyQt6.QtCore import Qt, QUrl
 from PyQt6.QtGui import QKeySequence, QShortcut, QAction, QIcon
 from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEnginePage
@@ -117,8 +117,8 @@ class MainWindow(QMainWindow):
         top_row_layout.setSpacing(4)
         
         # Tab bar takes the main space
-        self.tabs.tabBar().setExpanding(False)
-        top_row_layout.addWidget(self.tabs.tabBar(), 1)
+        self.tabs.tabBar().setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        top_row_layout.addWidget(self.tabs.tabBar())
         
         # Add New Tab button (+)
         self.new_tab_btn = QToolButton(self)
@@ -128,7 +128,7 @@ class MainWindow(QMainWindow):
         self.new_tab_btn.clicked.connect(lambda: self.tabs.add_new_tab())
         top_row_layout.addWidget(self.new_tab_btn)
         
-        top_row_layout.addStretch()
+        top_row_layout.addStretch(1)
         
         # Ask Gemini button (right side, like Chrome)
         self.ask_ai_btn = QPushButton("✨ Ask Gemini", self)
