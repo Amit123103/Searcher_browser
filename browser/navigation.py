@@ -1,51 +1,83 @@
-from PyQt6.QtWidgets import QToolBar, QLineEdit, QCompleter
-from PyQt6.QtGui import QAction, QStandardItemModel, QStandardItem
+from PyQt6.QtWidgets import (QToolBar, QLineEdit, QCompleter, QWidget, 
+                             QSizePolicy, QToolButton, QMenu)
+from PyQt6.QtGui import QAction, QStandardItemModel, QStandardItem, QIcon
 from PyQt6.QtCore import Qt, QUrl
 
 class NavigationBar(QToolBar):
     """
-    Main Navigation Toolbar for Searcher Browser.
-    Provides buttons for basic navigation and an address bar for URLs and searches.
+    Custom Toolbar for browser navigation and actions.
+    Features a sleek layout, standard icons, and a dropdown menu for tools.
     """
     
     def __init__(self, parent=None):
-        super().__init__("Navigation", parent)
-        self.setMovable(False) # Lock toolbar in place
+        super().__init__(parent)
         self.parent_window = parent
+        self.setMovable(False)
+        self.setStyleSheet("""
+            QToolBar {
+                background: #202124;
+                border-bottom: 1px solid #303134;
+                spacing: 5px;
+                padding: 5px;
+            }
+            QToolButton {
+                background: transparent;
+                border: none;
+                border-radius: 4px;
+                padding: 6px;
+                color: #e8eaed;
+                font-size: 14px;
+            }
+            QToolButton:hover {
+                background: #3c4043;
+            }
+            QToolButton::menu-indicator {
+                image: none;
+            }
+            QLineEdit {
+                background: #303134;
+                color: #e8eaed;
+                border: 1px solid #5f6368;
+                border-radius: 14px;
+                padding: 6px 12px;
+                font-size: 13px;
+                margin: 0px 10px;
+            }
+            QLineEdit:focus {
+                border: 1px solid #8ab4f8;
+            }
+        """)
         
         self.setup_ui()
         
     def setup_ui(self):
-        # Back Action
-        self.back_action = QAction("Back", self)
-        self.back_action.setStatusTip("Go back to previous page")
+        style = self.style()
+        
+        # 1. Primary Navigation Actions
+        self.back_action = QAction(style.standardIcon(style.StandardPixmap.SP_ArrowBack), "Back", self)
+        self.back_action.setToolTip("Go back")
         self.back_action.triggered.connect(self.navigate_back)
         self.addAction(self.back_action)
         
-        # Forward Action
-        self.forward_action = QAction("Forward", self)
-        self.forward_action.setStatusTip("Go forward to next page")
+        self.forward_action = QAction(style.standardIcon(style.StandardPixmap.SP_ArrowForward), "Forward", self)
+        self.forward_action.setToolTip("Go forward")
         self.forward_action.triggered.connect(self.navigate_forward)
         self.addAction(self.forward_action)
         
-        # Reload Action
-        self.reload_action = QAction("Refresh", self)
-        self.reload_action.setStatusTip("Reload current page")
+        self.reload_action = QAction(style.standardIcon(style.StandardPixmap.SP_BrowserReload), "Refresh", self)
+        self.reload_action.setToolTip("Reload page")
         self.reload_action.triggered.connect(self.navigate_reload)
         self.addAction(self.reload_action)
         
-        # Home Action
-        self.home_action = QAction("Home", self)
-        self.home_action.setStatusTip("Go to home page")
+        self.home_action = QAction(style.standardIcon(style.StandardPixmap.SP_DirHomeIcon), "Home", self)
+        self.home_action.setToolTip("Go to home")
         self.home_action.triggered.connect(self.navigate_home)
         self.addAction(self.home_action)
         
-        self.addSeparator()
-        
-        # Address Bar
+        # 2. Address Bar (Expanding)
         self.url_bar = QLineEdit()
         self.url_bar.setPlaceholderText("Search with Google or enter address")
-        self.url_bar.setStyleSheet("padding: 5px; border-radius: 15px; border: 1px solid #ccc;")
+        self.url_bar.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.url_bar.returnPressed.connect(self.navigate_to_url)
         
         # Setup Completer for Suggestions
@@ -59,64 +91,64 @@ class NavigationBar(QToolBar):
         
         # Voice Search Action
         self.voice_action = QAction("🎤", self)
-        self.voice_action.setStatusTip("Voice Search")
+        self.voice_action.setToolTip("Voice Search")
         self.voice_action.triggered.connect(self.trigger_voice_search)
         self.addAction(self.voice_action)
         
-        self.addSeparator()
+        # Spacer before tools
+        spacer = QWidget()
+        spacer.setFixedWidth(10)
+        self.addWidget(spacer)
         
-        # New Tab Action
-        self.new_tab_action = QAction("New Tab", self)
-        self.new_tab_action.setStatusTip("Open a new tab")
+        # 3. Quick Tools
+        self.new_tab_action = QAction("➕", self)
+        self.new_tab_action.setToolTip("New Tab")
         self.new_tab_action.triggered.connect(self.add_new_tab)
         self.addAction(self.new_tab_action)
         
-        self.addSeparator()
-        
-        # Bookmark Action
-        self.bookmark_action = QAction("Bookmark", self)
-        self.bookmark_action.setStatusTip("Bookmark current page")
+        self.bookmark_action = QAction("⭐", self)
+        self.bookmark_action.setToolTip("Bookmark current page")
         self.bookmark_action.triggered.connect(self.bookmark_page)
         self.addAction(self.bookmark_action)
         
-        # AI Assistant Toggle
-        self.ai_toggle_action = QAction("AI Assistant", self)
-        self.ai_toggle_action.setStatusTip("Toggle AI Sidebar")
+        self.ai_toggle_action = QAction("🤖 AI", self)
+        self.ai_toggle_action.setToolTip("Toggle AI Assistant")
         self.ai_toggle_action.setCheckable(True)
         self.ai_toggle_action.triggered.connect(self.toggle_ai_sidebar)
         self.addAction(self.ai_toggle_action)
         
-        self.addSeparator()
+        # 4. Settings & More Menu
+        menu_btn = QToolButton(self)
+        menu_btn.setText(" ☰ ")
+        menu_btn.setToolTip("Customize and control")
+        menu_btn.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         
-        # History Action
-        self.history_action = QAction("History", self)
-        self.history_action.setStatusTip("View browsing history")
-        self.history_action.triggered.connect(self.show_history)
-        self.addAction(self.history_action)
+        main_menu = QMenu(self)
         
-        # Bookmarks Manager Action
-        self.bookmarks_mgr_action = QAction("Bookmarks", self)
-        self.bookmarks_mgr_action.setStatusTip("View bookmarks")
-        self.bookmarks_mgr_action.triggered.connect(self.show_bookmarks)
-        self.addAction(self.bookmarks_mgr_action)
+        history_action = QAction("History", self)
+        history_action.triggered.connect(self.show_history)
+        main_menu.addAction(history_action)
         
-        # Downloads Action
-        self.downloads_action = QAction("Downloads", self)
-        self.downloads_action.setStatusTip("View downloads")
-        self.downloads_action.triggered.connect(self.show_downloads)
-        self.addAction(self.downloads_action)
+        bookmarks_mgr_action = QAction("Bookmarks", self)
+        bookmarks_mgr_action.triggered.connect(self.show_bookmarks)
+        main_menu.addAction(bookmarks_mgr_action)
         
-        # Passwords Action
-        self.passwords_action = QAction("Passwords", self)
-        self.passwords_action.setStatusTip("Manage saved passwords")
-        self.passwords_action.triggered.connect(self.show_passwords)
-        self.addAction(self.passwords_action)
+        downloads_action = QAction("Downloads", self)
+        downloads_action.triggered.connect(self.show_downloads)
+        main_menu.addAction(downloads_action)
         
-        # Settings Action
-        self.settings_action = QAction("Settings", self)
-        self.settings_action.setStatusTip("Browser settings")
-        self.settings_action.triggered.connect(self.show_settings)
-        self.addAction(self.settings_action)
+        passwords_action = QAction("Passwords", self)
+        passwords_action.triggered.connect(self.show_passwords)
+        main_menu.addAction(passwords_action)
+        
+        main_menu.addSeparator()
+        
+        settings_action = QAction("Settings", self)
+        settings_action.triggered.connect(self.show_settings)
+        main_menu.addAction(settings_action)
+        
+        menu_btn.setMenu(main_menu)
+        self.addWidget(menu_btn)
 
     def update_suggestions(self, history_records):
         self.completer_model.clear()
@@ -150,7 +182,6 @@ class NavigationBar(QToolBar):
     def navigate_home(self):
         browser = self.current_browser()
         if browser:
-            # Phase 1: Hardcoded Google home
             browser.setUrl(QUrl("https://www.google.com"))
             
     def add_new_tab(self):
@@ -199,8 +230,6 @@ class NavigationBar(QToolBar):
         if not url_text:
             return
             
-        # Basic heuristic to distinguish search vs URL:
-        # If it has spaces or doesn't have a dot, we treat it as a search
         if " " in url_text or "." not in url_text:
             url = QUrl(f"https://www.google.com/search?q={url_text}")
         else:
@@ -211,8 +240,6 @@ class NavigationBar(QToolBar):
         browser.setUrl(url)
         
     def update_url(self, qurl):
-        """Called when the active tab's URL changes to update the address bar."""
-        # Only update if it's a valid http/https URL (ignore about:blank etc if needed)
         url_str = qurl.toString()
         if url_str != "about:blank":
             self.url_bar.setText(url_str)
