@@ -139,11 +139,11 @@
         }
 
         /* Grid Layout */
-        .grid-container {
+        .widgets-grid {
             width: 100%;
             max-width: 960px;
             display: grid;
-            grid-template-columns: 1.5fr 1fr;
+            grid-template-columns: 1.25fr 1.25fr 1fr;
             grid-template-rows: auto auto;
             gap: 24px;
         }
@@ -230,6 +230,11 @@
         
         .site-item:hover {
             color: #fff;
+        }
+
+        .top-sites {
+            grid-column: 1 / 3;
+            grid-row: 1;
         }
 
         /* Weather */
