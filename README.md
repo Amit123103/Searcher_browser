@@ -45,10 +45,10 @@ python main.py
 
 If you just want to use the Searcher browser without installing Python, you can download the ready-to-use application!
 
-1. Go to the **Releases** section on this GitHub repository (look for the "Releases" tag on the right side of the page).
-2. Download the `Searcher.zip` or `Searcher.exe` file from the latest release.
-3. Extract the folder (if downloaded as a zip) and double-click `Searcher.exe` to start browsing!
-4. **No installation required!** The browser is fully portable.
+1. **[Click here to download Searcher Browser](https://github.com/yourusername/searcher_browser/releases/latest/download/Searcher.zip)** (Replace link with your actual release link)
+2. Once downloaded, extract the `Searcher.zip` file.
+3. Open the extracted folder and double-click `Searcher.exe`.
+4. The browser will open directly—**no installation required!**
 
 ---
 
@@ -69,11 +69,12 @@ Run the following command from the root of your project directory to build a win
 pyinstaller --noconsole --windowed --name "Searcher" --add-data "assets;assets" main.py
 ```
 
-### 3. Locate the Output
+### 3. Share Your Browser
 Once the build process completes:
 - Navigate to the newly created `dist` folder in your project directory.
 - Inside `dist/Searcher/`, you will find `Searcher.exe`.
-- You can create a shortcut to this `.exe` file and place it on your Desktop, or zip the entire `Searcher` folder to share it with others!
+- Zip the entire `Searcher` folder.
+- Upload this zip file to your GitHub Releases or any cloud storage, and share the link with others! When they click the link, they will download the browser, and upon extracting and running `Searcher.exe`, it will open directly.
 
 ---
 
