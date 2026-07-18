@@ -314,32 +314,6 @@ class SettingsTab(QWidget):
         gen_lay = QVBoxLayout()
         from PyQt6.QtWidgets import QFrame
         
-        # Profile Card
-        user_card = QFrame()
-        user_card.setProperty("class", "SettingsCard")
-        user_layout = QVBoxLayout(user_card)
-        user_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        user_layout.setSpacing(8)
-        user_layout.setContentsMargins(30, 30, 30, 30)
-        
-        avatar = QLabel("👤")
-        avatar.setFixedSize(80, 80)
-        avatar.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        avatar.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #38bdf8, stop:1 #818cf8); border-radius: 40px; font-size: 36px;")
-        
-        uname = QLabel("Alex Nova")
-        uname.setProperty("class", "CardTitle")
-        uname.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        umail = QLabel("alex.nova@searcher.ai")
-        umail.setProperty("class", "InnerSub")
-        umail.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        user_layout.addWidget(avatar, alignment=Qt.AlignmentFlag.AlignCenter)
-        user_layout.addWidget(uname)
-        user_layout.addWidget(umail)
-        gen_lay.addWidget(user_card)
-        
         # General Settings Card
         gen_card = QFrame()
         gen_card.setProperty("class", "SettingsCard")
