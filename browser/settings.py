@@ -50,10 +50,15 @@ class SettingsTab(QWidget):
         super().__init__(parent)
         self.settings_manager = settings_manager
         self.setWindowTitle("Settings")
+        self.setObjectName("SettingsTab")
         
         self.setStyleSheet("""
-            QWidget {
+            SettingsTab {
                 background-color: #ffffff;
+            }
+            QScrollArea {
+                background-color: #ffffff;
+                border: none;
             }
             QWidget#Sidebar {
                 background-color: #4b5563;
@@ -471,7 +476,14 @@ class SettingsTab(QWidget):
         grid_layout.addLayout(right_col, 1)
         
         content_layout.addLayout(grid_layout)
-        main_layout.addWidget(content_container)
+        
+        from PyQt6.QtWidgets import QScrollArea
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(content_container)
+        scroll_area.setStyleSheet("QScrollArea { border: none; background-color: #ffffff; }")
+        
+        main_layout.addWidget(scroll_area)
 
     def toggle_theme(self, theme_name):
         self.settings_manager.set("theme", theme_name)
