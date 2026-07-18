@@ -19,6 +19,7 @@ def get_dark_theme():
         border-radius: 6px;
         padding: 6px;
         color: #e2e8f0;
+        qproperty-iconSize: 18px 18px;
     }
     QToolButton:hover {
         background: rgba(255, 255, 255, 0.1);
@@ -140,6 +141,7 @@ def get_light_theme():
         border-radius: 6px;
         padding: 6px;
         color: #202124;
+        qproperty-iconSize: 18px 18px;
     }
     QToolButton:hover {
         background: rgba(0, 0, 0, 0.05);

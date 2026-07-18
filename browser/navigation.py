@@ -116,22 +116,22 @@ class NavigationBar(QToolBar):
         
     def navigate_back(self):
         browser = self.current_browser()
-        if browser:
+        if browser and hasattr(browser, 'back'):
             browser.back()
             
     def navigate_forward(self):
         browser = self.current_browser()
-        if browser:
+        if browser and hasattr(browser, 'forward'):
             browser.forward()
             
     def navigate_reload(self):
         browser = self.current_browser()
-        if browser:
+        if browser and hasattr(browser, 'reload'):
             browser.reload()
             
     def navigate_home(self):
         browser = self.current_browser()
-        if browser:
+        if browser and hasattr(browser, 'setUrl'):
             browser.setUrl(QUrl("https://www.google.com"))
             
     def add_new_tab(self):
