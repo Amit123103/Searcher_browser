@@ -30,6 +30,19 @@ def get_dark_theme():
     QToolButton#navBookmarkBtn { qproperty-icon: url(assets/icons/star_white.svg); }
     QToolButton#navMenuBtn { qproperty-icon: url(assets/icons/menu_white.svg); }
     
+    QToolButton#newTabBtn {
+        background: transparent;
+        border: none;
+        color: #e2e8f0;
+        font-size: 20px;
+        font-weight: 400;
+        padding: 0px 8px;
+    }
+    QToolButton#newTabBtn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+    }
+    
     QLineEdit {
         background-color: #20141a;
         color: #ffffff;
@@ -138,6 +151,19 @@ def get_light_theme():
     QToolButton#navBookmarkBtn { qproperty-icon: url(assets/icons/star_black.svg); }
     QToolButton#navMenuBtn { qproperty-icon: url(assets/icons/menu_black.svg); }
     
+    QToolButton#newTabBtn {
+        background: transparent;
+        border: none;
+        color: #202124;
+        font-size: 20px;
+        font-weight: 400;
+        padding: 0px 8px;
+    }
+    QToolButton#newTabBtn:hover {
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 6px;
+    }
+    
     QLineEdit {
         background-color: #ffffff;
         color: #202124;
@@ -157,6 +183,13 @@ def get_light_theme():
     QTabBar::tab:selected {
         background-color: #ffffff;
         color: #202124;
+    }
+    QTabBar::close-button {
+        image: url(assets/icons/close_black.svg);
+    }
+    QTabBar::close-button:hover {
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 2px;
     }
     QStatusBar {
         background-color: #f1f3f4;

@@ -112,22 +112,9 @@ class MainWindow(QMainWindow):
         
         # Add New Tab button (+)
         self.new_tab_btn = QToolButton(self)
+        self.new_tab_btn.setObjectName("newTabBtn")
         self.new_tab_btn.setText("+")
         self.new_tab_btn.setToolTip("Open a new tab")
-        self.new_tab_btn.setStyleSheet("""
-            QToolButton {
-                background: transparent;
-                border: none;
-                color: #e2e8f0;
-                font-size: 20px;
-                font-weight: 400;
-                padding: 0px 8px;
-            }
-            QToolButton:hover {
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 6px;
-            }
-        """)
         self.new_tab_btn.clicked.connect(lambda: self.tabs.add_new_tab())
         
         # Ask Gemini button
