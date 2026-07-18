@@ -295,8 +295,8 @@ class MainWindow(QMainWindow):
             err_html = f"<html><body style='background:#202124;color:#f28b82;padding:40px;font-family:sans-serif;'><h2>Search Failed</h2><p>{error_msg}</p></body></html>"
             browser.setHtml(err_html, QUrl(f"searcher://search?q={query}"))
             
-        self.search_thread.results_ready.connect(on_results_ready)
-        self.search_thread.error_occurred.connect(on_error)
+        self.search_thread.results_ready.connect(on_results_ready, Qt.ConnectionType.QueuedConnection)
+        self.search_thread.error_occurred.connect(on_error, Qt.ConnectionType.QueuedConnection)
         self.search_thread.start()
                 
     def smart_organize_tabs(self):
