@@ -19,9 +19,9 @@ class SearcherPage(QWebEnginePage):
 
     def createWindow(self, _type):
         """Handle links that request opening in a new window/tab (target='_blank', window.open, etc.)."""
-        # All window types (WebBrowserTab, WebBrowserBackgroundTab, WebBrowserWindow, WebDialog)
-        # should open as a new tab inside our browser
-        new_browser = self.parent_tabs.add_new_tab()
+        # Create a blank tab — do NOT load the start page, because the engine
+        # will immediately navigate this page to the target URL itself.
+        new_browser = self.parent_tabs.add_new_tab(qurl=QUrl("about:blank"), label="Loading...")
         return new_browser.page()
 
 class BrowserTabWidget(QTabWidget):
