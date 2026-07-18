@@ -91,33 +91,8 @@ class NavigationBar(QToolBar):
         menu_btn = QToolButton(self)
         menu_btn.setIcon(QIcon(os.path.join(assets_dir, 'menu.svg')))
         menu_btn.setToolTip("Customize and control")
-        menu_btn.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        menu_btn.clicked.connect(self.show_settings)
         
-        main_menu = QMenu(self)
-        
-        history_action = QAction("History", self)
-        history_action.triggered.connect(self.show_history)
-        main_menu.addAction(history_action)
-        
-        bookmarks_mgr_action = QAction("Bookmarks", self)
-        bookmarks_mgr_action.triggered.connect(self.show_bookmarks)
-        main_menu.addAction(bookmarks_mgr_action)
-        
-        downloads_action = QAction("Downloads", self)
-        downloads_action.triggered.connect(self.show_downloads)
-        main_menu.addAction(downloads_action)
-        
-        passwords_action = QAction("Passwords", self)
-        passwords_action.triggered.connect(self.show_passwords)
-        main_menu.addAction(passwords_action)
-        
-        main_menu.addSeparator()
-        
-        settings_action = QAction("Settings", self)
-        settings_action.triggered.connect(self.show_settings)
-        main_menu.addAction(settings_action)
-        
-        menu_btn.setMenu(main_menu)
         self.addWidget(menu_btn)
 
     def update_suggestions(self, history_records):

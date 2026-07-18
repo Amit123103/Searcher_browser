@@ -322,12 +322,23 @@ class SettingsDialog(QDialog):
         tt_lay.setContentsMargins(2,2,2,2)
         tt_lay.setSpacing(0)
         
-        btn_light = QPushButton("Light")
-        btn_light.setProperty("class", "ToggleInactive")
-        btn_dark = QPushButton("Dark")
-        btn_dark.setProperty("class", "ToggleActive")
-        tt_lay.addWidget(btn_light)
-        tt_lay.addWidget(btn_dark)
+        self.btn_light = QPushButton("Light")
+        self.btn_dark = QPushButton("Dark")
+        
+        # Set initial style based on current setting
+        current_theme = self.settings_manager.get("theme", "dark")
+        if current_theme == "light":
+            self.btn_light.setProperty("class", "ToggleActive")
+            self.btn_dark.setProperty("class", "ToggleInactive")
+        else:
+            self.btn_light.setProperty("class", "ToggleInactive")
+            self.btn_dark.setProperty("class", "ToggleActive")
+            
+        self.btn_light.clicked.connect(lambda: self.toggle_theme("light"))
+        self.btn_dark.clicked.connect(lambda: self.toggle_theme("dark"))
+            
+        tt_lay.addWidget(self.btn_light)
+        tt_lay.addWidget(self.btn_dark)
         
         theme_inner_lay.addLayout(theme_labels)
         theme_inner_lay.addWidget(theme_toggle_bg)
@@ -342,12 +353,21 @@ class SettingsDialog(QDialog):
         typo_lay.addWidget(typo_lbl)
         
         fonts_lay = QHBoxLayout()
-        font1 = QLabel("Inter\n\nAa")
-        font1.setStyleSheet("border: 1px solid #38bdf8; border-radius: 12px; padding: 12px; color: #fff;")
-        font2 = QLabel("Poppins\n\nAa")
-        font2.setStyleSheet("border: 1px solid #334155; border-radius: 12px; padding: 12px; color: #fff;")
-        fonts_lay.addWidget(font1)
-        fonts_lay.addWidget(font2)
+        self.btn_inter = QPushButton("Inter\n\nAa")
+        self.btn_poppins = QPushButton("Poppins\n\nAa")
+        
+        active_font_style = "border: 1px solid #38bdf8; border-radius: 12px; padding: 12px; color: #fff; background-color: #1e293b; text-align: left;"
+        inactive_font_style = "border: 1px solid #334155; border-radius: 12px; padding: 12px; color: #fff; background-color: transparent; text-align: left;"
+        
+        current_font = self.settings_manager.get("typography", "Inter")
+        self.btn_inter.setStyleSheet(active_font_style if current_font == "Inter" else inactive_font_style)
+        self.btn_poppins.setStyleSheet(active_font_style if current_font == "Poppins" else inactive_font_style)
+        
+        self.btn_inter.clicked.connect(lambda: self.toggle_typography("Inter"))
+        self.btn_poppins.clicked.connect(lambda: self.toggle_typography("Poppins"))
+        
+        fonts_lay.addWidget(self.btn_inter)
+        fonts_lay.addWidget(self.btn_poppins)
         typo_lay.addLayout(fonts_lay)
         
         app_layout.addWidget(typo_inner)
@@ -374,9 +394,10 @@ class SettingsDialog(QDialog):
         ins_labels.addWidget(ins_l2)
         ins_lay.addLayout(ins_labels)
         
-        switch1 = QLabel("On")
-        switch1.setStyleSheet("background-color: #0ea5e9; color: white; border-radius: 12px; padding: 4px 12px;")
-        ins_lay.addWidget(switch1)
+        self.switch_insights = QPushButton()
+        self.switch_insights.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.switch_insights.clicked.connect(lambda: self.toggle_switch("insights"))
+        ins_lay.addWidget(self.switch_insights)
         ai_layout.addWidget(insight_inner)
         
         prefetch_inner = QFrame()
@@ -391,9 +412,13 @@ class SettingsDialog(QDialog):
         pref_labels.addWidget(pref_l2)
         pref_lay.addLayout(pref_labels)
         
-        switch2 = QLabel("Off")
-        switch2.setStyleSheet("background-color: #1e293b; color: white; border-radius: 12px; padding: 4px 12px;")
-        pref_lay.addWidget(switch2)
+        self.switch_prefetch = QPushButton()
+        self.switch_prefetch.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.switch_prefetch.clicked.connect(lambda: self.toggle_switch("prefetch"))
+        pref_lay.addWidget(self.switch_prefetch)
+        
+        self.update_switch_ui("insights", self.settings_manager.get("ai_insights", True))
+        self.update_switch_ui("prefetch", self.settings_manager.get("ai_prefetch", False))
         ai_layout.addWidget(prefetch_inner)
         
         left_col.addWidget(ai_card)
@@ -448,6 +473,48 @@ class SettingsDialog(QDialog):
         
         content_layout.addLayout(grid_layout)
         main_layout.addWidget(content_container)
+
+    def toggle_theme(self, theme_name):
+        self.settings_manager.set("theme", theme_name)
+        if theme_name == "light":
+            self.btn_light.setProperty("class", "ToggleActive")
+            self.btn_dark.setProperty("class", "ToggleInactive")
+        else:
+            self.btn_light.setProperty("class", "ToggleInactive")
+            self.btn_dark.setProperty("class", "ToggleActive")
+            
+        self.btn_light.style().unpolish(self.btn_light)
+        self.btn_light.style().polish(self.btn_light)
+        self.btn_dark.style().unpolish(self.btn_dark)
+        self.btn_dark.style().polish(self.btn_dark)
+        
+        # Apply theme to parent if available
+        if self.parent() and hasattr(self.parent(), "apply_current_theme"):
+            self.parent().apply_current_theme()
+            
+    def toggle_typography(self, font_name):
+        self.settings_manager.set("typography", font_name)
+        active_font_style = "border: 1px solid #38bdf8; border-radius: 12px; padding: 12px; color: #fff; background-color: #1e293b; text-align: left;"
+        inactive_font_style = "border: 1px solid #334155; border-radius: 12px; padding: 12px; color: #fff; background-color: transparent; text-align: left;"
+        self.btn_inter.setStyleSheet(active_font_style if font_name == "Inter" else inactive_font_style)
+        self.btn_poppins.setStyleSheet(active_font_style if font_name == "Poppins" else inactive_font_style)
+            
+    def toggle_switch(self, setting_key):
+        full_key = f"ai_{setting_key}"
+        current = self.settings_manager.get(full_key, setting_key == "insights")
+        new_val = not current
+        self.settings_manager.set(full_key, new_val)
+        self.update_switch_ui(setting_key, new_val)
+        
+    def update_switch_ui(self, key, is_on):
+        btn = self.switch_insights if key == "insights" else self.switch_prefetch
+        if is_on:
+            btn.setText("On")
+            btn.setStyleSheet("background-color: #0ea5e9; color: white; border-radius: 12px; padding: 4px 12px; border: none; font-weight: 500;")
+        else:
+            btn.setText("Off")
+            btn.setStyleSheet("background-color: #1e293b; color: #94a3b8; border-radius: 12px; padding: 4px 12px; border: none; font-weight: 500;")
+
         
     def save_and_close(self):
         self.settings_manager.set("theme", "dark")
