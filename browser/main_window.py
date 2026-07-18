@@ -130,25 +130,6 @@ class MainWindow(QMainWindow):
         
         top_row_layout.addStretch(1)
         
-        # Ask Gemini button (right side, like Chrome)
-        self.ask_ai_btn = QPushButton("✨ Ask Gemini", self)
-        self.ask_ai_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #2d1f3d;
-                color: #d4b8ff;
-                border-radius: 14px;
-                padding: 4px 14px;
-                font-size: 12px;
-                font-weight: 500;
-                border: 1px solid #3d2f4d;
-            }
-            QPushButton:hover {
-                background-color: #3d2f4d;
-            }
-        """)
-        self.ask_ai_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.ask_ai_btn.clicked.connect(self.toggle_ai_sidebar)
-        top_row_layout.addWidget(self.ask_ai_btn)
         
         # Window control buttons (minimize, maximize, close)
         for btn_text, btn_action, btn_style in [
