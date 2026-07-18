@@ -45,7 +45,7 @@ python main.py
 
 If you just want to use the Searcher browser without installing Python, you can download the ready-to-use application!
 
-1. **[Click here to download Searcher Browser](https://github.com/yourusername/searcher_browser/releases/latest/download/Searcher.zip)** (Replace link with your actual release link)
+1. **[Click here to download Searcher Browser](https://github.com/Amit123103/Searcher_browser/releases/latest/download/Searcher.zip)**
 2. Once downloaded, extract the `Searcher.zip` file.
 3. Open the extracted folder and double-click `Searcher.exe`.
 4. The browser will open directly—**no installation required!**
