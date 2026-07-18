@@ -1,0 +1,3 @@
+"""
+Searcher Browser package initialization.
+"""

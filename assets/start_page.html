@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Searcher - New Tab</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+            background-color: #202124; 
+            color: #fff; 
+        }
+        .logo { 
+            font-size: 4rem; 
+            font-weight: bold; 
+            margin-bottom: 30px; 
+            background: linear-gradient(45deg, #8ab4f8, #c58af9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .search-container { 
+            width: 100%; 
+            max-width: 600px; 
+            display: flex; 
+        }
+        input[type="text"] { 
+            flex-grow: 1; 
+            padding: 15px 20px; 
+            border-radius: 24px 0 0 24px; 
+            border: 1px solid #5f6368; 
+            background-color: #303134; 
+            color: #fff; 
+            font-size: 16px; 
+            outline: none; 
+        }
+        input[type="text"]:focus {
+            border-color: #8ab4f8;
+        }
+        button { 
+            padding: 15px 30px; 
+            border-radius: 0 24px 24px 0; 
+            border: 1px solid #5f6368; 
+            background-color: #8ab4f8; 
+            color: #202124; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 16px; 
+            border-left: none; 
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #aecbf9;
+        }
+        .links { 
+            margin-top: 50px; 
+            display: flex; 
+            gap: 20px; 
+        }
+        .link-card { 
+            background-color: #303134; 
+            padding: 15px 25px; 
+            border-radius: 12px; 
+            text-decoration: none; 
+            color: #fff; 
+            transition: background 0.3s, transform 0.2s; 
+            border: 1px solid transparent;
+        }
+        .link-card:hover { 
+            background-color: #404447; 
+            border-color: #5f6368;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">Searcher</div>
+    <!-- Simple form that redirects to google search -->
+    <form class="search-container" action="https://www.google.com/search" method="get">
+        <input type="text" name="q" placeholder="Search the web..." autofocus autocomplete="off">
+        <button type="submit">Search</button>
+    </form>
+    <div class="links">
+        <a href="https://github.com" class="link-card">GitHub</a>
+        <a href="https://youtube.com" class="link-card">YouTube</a>
+        <a href="https://reddit.com" class="link-card">Reddit</a>
+    </div>
+</body>
+</html>
