@@ -254,6 +254,8 @@ class SettingsTab(QWidget):
         
         new_ws_btn = QPushButton("+ New Workspace")
         new_ws_btn.setObjectName("NewWorkspaceBtn")
+        new_ws_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        new_ws_btn.clicked.connect(self.create_new_workspace)
         
         category_lbl = QLabel("Settings")
         category_lbl.setObjectName("SettingsCategory")
@@ -551,6 +553,25 @@ class SettingsTab(QWidget):
         new_val = not current
         self.settings_manager.set(full_key, new_val)
         self.update_switch_ui(setting_key, new_val)
+        
+    def create_new_workspace(self):
+        from PyQt6.QtWidgets import QInputDialog, QMessageBox
+        name, ok = QInputDialog.getText(self, "New Workspace", "Enter workspace name:")
+        if ok and name.strip():
+            # In a real app we'd save this to settings, but for now we'll just spawn a new browser window
+            # with that title to simulate a separate workspace session.
+            from browser.main_window import MainWindow
+            new_window = MainWindow()
+            new_window.setWindowTitle(f"Searcher - {name.strip()}")
+            new_window.show()
+            
+            # Keep reference to prevent GC
+            if not hasattr(self.main_window, "child_workspaces"):
+                self.main_window.child_workspaces = []
+            self.main_window.child_workspaces.append(new_window)
+            
+            # Show success toast or message
+            QMessageBox.information(self, "Workspace Created", f"Successfully created workspace: {name.strip()}")
         
     def update_switch_ui(self, key, is_on):
         btn = self.switch_insights if key == "insights" else self.switch_prefetch
