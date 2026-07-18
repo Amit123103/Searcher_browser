@@ -24,6 +24,12 @@ def get_dark_theme():
     QToolButton:hover {
         background: rgba(255, 255, 255, 0.1);
     }
+    QToolButton:disabled {
+        background: transparent;
+        color: #555555;
+    }
+    QToolButton#navBackBtn:disabled { qproperty-icon: url(assets/icons/back_black.svg); }
+    QToolButton#navForwardBtn:disabled { qproperty-icon: url(assets/icons/forward_black.svg); }
     QToolButton#navBackBtn { qproperty-icon: url(assets/icons/back_white.svg); }
     QToolButton#navForwardBtn { qproperty-icon: url(assets/icons/forward_white.svg); }
     QToolButton#navReloadBtn { qproperty-icon: url(assets/icons/reload_white.svg); }
@@ -146,6 +152,12 @@ def get_light_theme():
     QToolButton:hover {
         background: rgba(0, 0, 0, 0.05);
     }
+    QToolButton:disabled {
+        background: transparent;
+        color: #cccccc;
+    }
+    QToolButton#navBackBtn:disabled { qproperty-icon: url(assets/icons/back_black.svg); /* would be better if we had grey icon, but we can just use opacity if QSS supported it. Wait, QSS has no opacity. Let's just use the white one for light theme if it looks disabled? No, let's leave the same icon. The icon itself might not fade, but there is no back_grey.svg */ }
+    QToolButton#navForwardBtn:disabled { qproperty-icon: url(assets/icons/forward_black.svg); }
     QToolButton#navBackBtn { qproperty-icon: url(assets/icons/back_black.svg); }
     QToolButton#navForwardBtn { qproperty-icon: url(assets/icons/forward_black.svg); }
     QToolButton#navReloadBtn { qproperty-icon: url(assets/icons/reload_black.svg); }

@@ -26,12 +26,14 @@ class NavigationBar(QToolBar):
         self.back_btn.setObjectName("navBackBtn")
         self.back_btn.setToolTip("Go back")
         self.back_btn.clicked.connect(self.navigate_back)
+        self.back_btn.setEnabled(False)
         self.addWidget(self.back_btn)
         
         self.forward_btn = QToolButton(self)
         self.forward_btn.setObjectName("navForwardBtn")
         self.forward_btn.setToolTip("Go forward")
         self.forward_btn.clicked.connect(self.navigate_forward)
+        self.forward_btn.setEnabled(False)
         self.addWidget(self.forward_btn)
         
         self.reload_btn = QToolButton(self)

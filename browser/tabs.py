@@ -188,10 +188,28 @@ class BrowserTabWidget(QTabWidget):
             self.url_changed.emit(url)
             self.title_changed.emit(title)
             
+            # Update toolbar back/forward buttons enabled states based on history
+            main_window = self.window()
+            if hasattr(main_window, 'nav_bar'):
+                if hasattr(browser, 'page'):
+                    main_window.nav_bar.back_btn.setEnabled(browser.page().history().canGoBack())
+                    main_window.nav_bar.forward_btn.setEnabled(browser.page().history().canGoForward())
+                else:
+                    # Native page, disable navigation
+                    main_window.nav_bar.back_btn.setEnabled(False)
+                    main_window.nav_bar.forward_btn.setEnabled(False)
+            
     def on_url_changed(self, qurl, browser):
         # Only emit if the signal came from the currently active tab
         if browser == self.current_browser():
             self.url_changed.emit(qurl)
+            
+            # Update toolbar back/forward buttons enabled states based on history
+            main_window = self.window()
+            if hasattr(main_window, 'nav_bar'):
+                if hasattr(browser, 'page'):
+                    main_window.nav_bar.back_btn.setEnabled(browser.page().history().canGoBack())
+                    main_window.nav_bar.forward_btn.setEnabled(browser.page().history().canGoForward())
             
     def on_title_changed(self, title, browser):
         i = self.indexOf(browser)
@@ -230,3 +248,11 @@ class BrowserTabWidget(QTabWidget):
                     document.body.style.backgroundAttachment = 'fixed';
                     """
                     browser.page().runJavaScript(script)
+                    
+        # Update toolbar back/forward buttons enabled states based on history
+        if browser == self.current_browser():
+            main_window = self.window()
+            if hasattr(main_window, 'nav_bar'):
+                if hasattr(browser, 'page'):
+                    main_window.nav_bar.back_btn.setEnabled(browser.page().history().canGoBack())
+                    main_window.nav_bar.forward_btn.setEnabled(browser.page().history().canGoForward())
