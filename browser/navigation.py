@@ -14,40 +14,7 @@ class NavigationBar(QToolBar):
         super().__init__(parent)
         self.parent_window = parent
         self.setMovable(False)
-        self.setStyleSheet("""
-            QToolBar {
-                background: #202124;
-                border-bottom: 1px solid #303134;
-                spacing: 5px;
-                padding: 5px;
-            }
-            QToolButton {
-                background: transparent;
-                border: none;
-                border-radius: 4px;
-                padding: 6px;
-                color: #e8eaed;
-                font-size: 14px;
-            }
-            QToolButton:hover {
-                background: #3c4043;
-            }
-            QToolButton::menu-indicator {
-                image: none;
-            }
-            QLineEdit {
-                background: #303134;
-                color: #e8eaed;
-                border: 1px solid #5f6368;
-                border-radius: 14px;
-                padding: 6px 12px;
-                font-size: 13px;
-                margin: 0px 10px;
-            }
-            QLineEdit:focus {
-                border: 1px solid #8ab4f8;
-            }
-        """)
+        # Styles are handled by the global theme in themes.py
         
         self.setup_ui()
         

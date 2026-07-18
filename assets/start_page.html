@@ -1,101 +1,553 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Searcher - New Tab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
-            margin: 0; 
-            background-color: #202124; 
-            color: #fff; 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
-        .logo { 
-            font-size: 4rem; 
-            font-weight: bold; 
-            margin-bottom: 30px; 
-            background: linear-gradient(45deg, #8ab4f8, #c58af9);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+
+        body {
+            background-color: #0E1217;
+            background-image: radial-gradient(circle at center top, rgba(56, 189, 248, 0.1) 0%, transparent 40%);
+            color: #F8FAFC;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 80px 20px 40px;
         }
-        .search-container { 
-            width: 100%; 
-            max-width: 600px; 
-            display: flex; 
+
+        /* Logo Styling */
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
         }
-        input[type="text"] { 
-            flex-grow: 1; 
-            padding: 15px 20px; 
-            border-radius: 24px 0 0 24px; 
-            border: 1px solid #5f6368; 
-            background-color: #303134; 
-            color: #fff; 
-            font-size: 16px; 
-            outline: none; 
+
+        .logo-svg {
+            width: 90px;
+            height: 90px;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 8px 16px rgba(56, 189, 248, 0.2));
+            animation: float 6s ease-in-out infinite;
         }
-        input[type="text"]:focus {
-            border-color: #8ab4f8;
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
         }
-        button { 
-            padding: 15px 30px; 
-            border-radius: 0 24px 24px 0; 
-            border: 1px solid #5f6368; 
-            background-color: #8ab4f8; 
-            color: #202124; 
-            font-weight: bold; 
-            cursor: pointer; 
-            font-size: 16px; 
-            border-left: none; 
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 720px;
+            margin-bottom: 60px;
+            z-index: 10;
+        }
+
+        .search-container::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(90deg, rgba(56, 189, 248, 0.4), rgba(56, 189, 248, 0.1), rgba(56, 189, 248, 0.4));
+            border-radius: 28px;
+            z-index: -1;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+
+        .search-container:focus-within::before {
+            opacity: 1;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        .search-input {
+            width: 100%;
+            background-color: #1A1D24;
+            border: 1px solid #2E333C;
+            border-radius: 26px;
+            padding: 16px 24px 16px 52px;
+            color: #F8FAFC;
+            font-size: 1.1rem;
+            outline: none;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            background-color: #1F232B;
+            border-color: #38BDF8;
+        }
+
+        .search-input::placeholder {
+            color: #94A3B8;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            stroke: #94A3B8;
+        }
+
+        .search-actions {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+
+        .search-action-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: #94A3B8;
+            transition: stroke 0.2s ease;
+        }
+        
+        .search-action-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .search-action-btn:hover svg {
+            stroke: #38BDF8;
+        }
+
+        .btn-sparkle {
+            background-color: rgba(56, 189, 248, 0.1);
+        }
+        .btn-sparkle svg {
+            stroke: #38BDF8;
+        }
+        
+        /* Grid Layout */
+        .widgets-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: auto auto;
+            gap: 24px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .card {
+            background-color: #17191C;
+            border: 1px solid #2A2F38;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            border-color: #3A404C;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: #94A3B8;
+            text-transform: uppercase;
+        }
+
+        /* Top Sites */
+        .top-sites {
+            grid-column: 1 / 3;
+            grid-row: 1;
+        }
+
+        .sites-container {
+            display: flex;
+            gap: 24px;
+        }
+
+        .site-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: #E2E8F0;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            cursor: pointer;
+        }
+
+        .site-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background-color: #23272E;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #323842;
+            transition: all 0.2s ease;
+        }
+
+        .site-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: #94A3B8;
+        }
+
+        .site-item:hover .site-icon {
+            background-color: #2D323B;
+            border-color: #4B5563;
+            transform: scale(1.05);
+        }
+        
+        .site-item:hover {
+            color: #fff;
+        }
+
+        /* Weather */
+        .weather {
+            grid-column: 3;
+            grid-row: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .weather-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .weather-temp {
+            font-size: 2rem;
+            font-weight: 600;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        
+        .weather-loc {
+            font-size: 0.85rem;
+            color: #94A3B8;
+        }
+        
+        .weather-icon {
+            width: 28px;
+            height: 28px;
+            stroke: #38BDF8;
+        }
+        
+        .weather-bottom {
+            display: flex;
+            gap: 16px;
+            font-size: 0.8rem;
+            color: #94A3B8;
+            margin-top: 20px;
+        }
+        
+        .weather-stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .weather-stat svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* For You */
+        .for-you {
+            grid-column: 1 / 3;
+            grid-row: 2;
+        }
+        
+        .news-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: inherit;
+            padding: 12px;
+            border-radius: 8px;
             transition: background 0.2s;
         }
-        button:hover {
-            background-color: #aecbf9;
+        
+        .news-item:last-child {
+            margin-bottom: 0;
         }
-        .links { 
-            margin-top: 50px; 
-            display: flex; 
-            gap: 20px; 
+        
+        .news-item:hover {
+            background-color: rgba(255, 255, 255, 0.03);
         }
-        .link-card { 
-            background-color: #303134; 
-            padding: 15px 25px; 
-            border-radius: 12px; 
-            text-decoration: none; 
-            color: #fff; 
-            transition: background 0.3s, transform 0.2s; 
-            border: 1px solid transparent;
+        
+        .news-thumb {
+            width: 64px;
+            height: 64px;
+            border-radius: 8px;
+            background-color: #23272E;
+            object-fit: cover;
         }
-        .link-card:hover { 
-            background-color: #404447; 
-            border-color: #5f6368;
-            transform: translateY(-2px);
+        
+        .news-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 6px;
         }
+        
+        .news-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #E2E8F0;
+        }
+        
+        .news-meta {
+            font-size: 0.8rem;
+            color: #94A3B8;
+        }
+
+        /* Scratchpad */
+        .scratchpad {
+            grid-column: 3;
+            grid-row: 2;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .scratchpad textarea {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: #E2E8F0;
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: none;
+            outline: none;
+            line-height: 1.5;
+        }
+        
+        .scratchpad textarea::placeholder {
+            color: #64748B;
+        }
+        
+        /* Utility */
+        .ai-icon-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #38BDF8;
+        }
+        
+        .ai-icon-header svg {
+            width: 14px;
+            height: 14px;
+        }
+
     </style>
 </head>
 <body>
-    <div class="logo">Searcher</div>
+
+    <div class="logo-container">
+        <!-- SVG for the glowing S magnifying glass -->
+        <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="glassGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(138, 180, 248, 0.4)" />
+                    <stop offset="100%" stop-color="rgba(255, 255, 255, 0.05)" />
+                </linearGradient>
+                <linearGradient id="sGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#8ab4f8" />
+                    <stop offset="100%" stop-color="#38bdf8" />
+                </linearGradient>
+                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+            </defs>
+            
+            <!-- Magnifying Glass Rim -->
+            <circle cx="45" cy="45" r="35" fill="url(#glassGrad)" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+            <circle cx="45" cy="45" r="28" fill="rgba(0,0,0,0.3)" stroke="rgba(56,189,248,0.3)" stroke-width="4"/>
+            <!-- Handle -->
+            <rect x="65" y="65" width="25" height="12" rx="6" transform="rotate(45 65 65)" fill="url(#glassGrad)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+            <!-- The 'S' -->
+            <path d="M 52 35 C 45 32, 38 35, 38 41 C 38 46, 45 47, 48 49 C 52 51, 53 56, 49 60 C 44 63, 37 60, 35 56" 
+                  fill="none" stroke="url(#sGrad)" stroke-width="6" stroke-linecap="round" filter="url(#glow)"/>
+        </svg>
+        <div class="logo-text">Searcher</div>
+    </div>
+
+    <form class="search-container" onsubmit="doSearch(event)">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input id="search-input" class="search-input" type="text" placeholder="Search the web or ask AI..." autofocus autocomplete="off">
+        <div class="search-actions">
+            <button type="button" class="search-action-btn btn-sparkle" title="Ask AI">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9.88 3.2a1 1 0 0 0-1.76 0l-2.4 5.36a1 1 0 0 1-.56.56l-5.36 2.4a1 1 0 0 0 0 1.76l5.36 2.4a1 1 0 0 1 .56.56l2.4 5.36a1 1 0 0 0 1.76 0l2.4-5.36a1 1 0 0 1 .56-.56l5.36-2.4a1 1 0 0 0 0-1.76l-5.36-2.4a1 1 0 0 1-.56-.56L9.88 3.2z"></path>
+                </svg>
+            </button>
+            <button type="button" class="search-action-btn" title="Voice Search">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
+            </button>
+        </div>
+    </form>
+
+    <div class="widgets-grid">
+        <!-- Top Sites Card -->
+        <div class="card top-sites">
+            <div class="card-header">
+                <span>Top Sites</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+            </div>
+            <div class="sites-container">
+                <a href="https://news.google.com" class="site-item">
+                    <div class="site-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    </div>
+                    <span>News</span>
+                </a>
+                <a href="https://mail.google.com" class="site-item">
+                    <div class="site-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    </div>
+                    <span>Mail</span>
+                </a>
+                <a href="https://youtube.com" class="site-item">
+                    <div class="site-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                    </div>
+                    <span>Video</span>
+                </a>
+                <a href="https://docs.google.com" class="site-item">
+                    <div class="site-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <span>Docs</span>
+                </a>
+                <div class="site-item">
+                    <div class="site-icon" style="border-style: dashed;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </div>
+                    <span>Add</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weather Card -->
+        <div class="card weather">
+            <div class="weather-top">
+                <div>
+                    <div class="weather-temp">72°</div>
+                    <div class="weather-loc">San Francisco, CA</div>
+                </div>
+                <svg class="weather-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </div>
+            <div class="weather-bottom">
+                <div class="weather-stat">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"></path></svg>
+                    <span>45%</span>
+                </div>
+                <div class="weather-stat">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path></svg>
+                    <span>12 mph</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- For You Card -->
+        <div class="card for-you">
+            <div class="card-header ai-icon-header">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 3.2a1 1 0 0 0-1.76 0l-2.4 5.36a1 1 0 0 1-.56.56l-5.36 2.4a1 1 0 0 0 0 1.76l5.36 2.4a1 1 0 0 1 .56.56l2.4 5.36a1 1 0 0 0 1.76 0l2.4-5.36a1 1 0 0 1 .56-.56l5.36-2.4a1 1 0 0 0 0-1.76l-5.36-2.4a1 1 0 0 1-.56-.56L9.88 3.2z"></path></svg>
+                <span>For You</span>
+            </div>
+            
+            <a href="#" class="news-item">
+                <div class="news-thumb" style="background: linear-gradient(135deg, #1e3a8a, #0f172a);"></div>
+                <div class="news-content">
+                    <div class="news-title">The Future of Neural Interfaces in 2025</div>
+                    <div class="news-meta">TechCrunch • 2h ago</div>
+                </div>
+            </a>
+            
+            <a href="#" class="news-item">
+                <div class="news-thumb" style="background: linear-gradient(135deg, #f1f5f9, #94a3b8);"></div>
+                <div class="news-content">
+                    <div class="news-title">New Solid-State Battery Breakthrough</div>
+                    <div class="news-meta">Wired • 5h ago</div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Scratchpad Card -->
+        <div class="card scratchpad">
+            <div class="card-header">
+                <span>Scratchpad</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+            </div>
+            <textarea placeholder="Jot down a quick thought..."></textarea>
+        </div>
+    </div>
+
     <script>
         function doSearch(event) {
             event.preventDefault();
             const query = document.getElementById('search-input').value;
             if (query.trim() !== '') {
-                // Navigate to a special URL that our Python code can intercept
                 window.location.href = 'https://searcher.local/search?q=' + encodeURIComponent(query);
             }
         }
     </script>
-    <form class="search-container" onsubmit="doSearch(event)">
-        <input id="search-input" type="text" name="q" placeholder="Search the web..." autofocus autocomplete="off">
-        <button type="submit">Search</button>
-    </form>
-    <div class="links">
-        <a href="https://github.com" class="link-card">GitHub</a>
-        <a href="https://youtube.com" class="link-card">YouTube</a>
-        <a href="https://reddit.com" class="link-card">Reddit</a>
-    </div>
 </body>
 </html>

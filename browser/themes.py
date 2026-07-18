@@ -5,68 +5,81 @@ Theme definitions for the Searcher Browser.
 def get_dark_theme():
     return """
     QMainWindow {
-        background-color: #202124;
+        background-color: #111315;
     }
     QToolBar {
-        background-color: #2b2b2b;
-        border: none;
-        padding: 5px;
-        spacing: 5px;
+        background-color: #17191C;
+        border-bottom: 1px solid #23272E;
+        padding: 8px;
+        spacing: 8px;
     }
     QLineEdit {
-        background-color: #171717;
-        color: #e8eaed;
-        border-radius: 15px;
-        padding: 5px 15px;
+        background-color: #0E1012;
+        color: #E2E8F0;
+        border-radius: 18px;
+        padding: 8px 18px;
         font-size: 14px;
-        border: 1px solid #5f6368;
+        border: 1px solid #2A2F38;
+    }
+    QLineEdit:focus {
+        border: 1px solid #38BDF8;
     }
     QTabBar::tab {
-        background-color: #202124;
-        color: #9aa0a6;
-        padding: 8px 20px;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
-        min-width: 150px;
+        background-color: transparent;
+        color: #94A3B8;
+        padding: 10px 24px;
+        border: none;
+        min-width: 120px;
+        font-weight: 500;
+        border-bottom: 2px solid transparent;
     }
     QTabBar::tab:selected {
-        background-color: #323639;
-        color: #e8eaed;
+        color: #F8FAFC;
+        border-bottom: 2px solid #38BDF8;
+    }
+    QTabBar::tab:hover:!selected {
+        background-color: #1C1F26;
+        border-radius: 6px;
     }
     QStatusBar {
-        background-color: #202124;
-        color: #e8eaed;
+        background-color: #111315;
+        color: #94A3B8;
     }
     QProgressBar {
-        border: 1px solid #5f6368;
-        border-radius: 3px;
+        border: none;
+        border-radius: 2px;
+        background-color: #1C1F26;
         text-align: center;
-        color: #e8eaed;
+        color: transparent;
     }
     QProgressBar::chunk {
-        background-color: #8ab4f8;
+        background-color: #38BDF8;
+        border-radius: 2px;
     }
     QDialog {
-        background-color: #202124;
-        color: #e8eaed;
+        background-color: #17191C;
+        color: #E2E8F0;
     }
     QLabel {
-        color: #e8eaed;
+        color: #E2E8F0;
     }
     QPushButton {
-        background-color: #323639;
-        color: #e8eaed;
-        border: 1px solid #5f6368;
-        padding: 5px 15px;
-        border-radius: 4px;
+        background-color: #1C1F26;
+        color: #E2E8F0;
+        border: 1px solid #2A2F38;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 500;
     }
     QPushButton:hover {
-        background-color: #404447;
+        background-color: #23272E;
+        border: 1px solid #38BDF8;
     }
     QListWidget {
-        background-color: #202124;
-        color: #e8eaed;
-        border: 1px solid #5f6368;
+        background-color: #17191C;
+        color: #E2E8F0;
+        border: 1px solid #2A2F38;
+        border-radius: 8px;
     }
     """
 
