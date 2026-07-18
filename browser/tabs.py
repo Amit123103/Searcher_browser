@@ -42,6 +42,57 @@ class BrowserTabWidget(QTabWidget):
         # Track recently closed tabs for restoration
         self.closed_tabs = []
         
+        # Inject custom "Searcher" branding script on Google
+        from PyQt6.QtWebEngineCore import QWebEngineScript, QWebEngineProfile
+        script = QWebEngineScript()
+        script.setName("SearcherBranding")
+        script.setSourceCode("""
+        (function() {
+            function injectSearcherBrand() {
+                if (!window.location.hostname.includes('google.')) return;
+                
+                // Replace the top left logo in search results
+                let logos = document.querySelectorAll('a#logo, a.logo, a[title="Go to Google Home"], a[href^="https://www.google.com/?"]');
+                logos.forEach(a => {
+                    if (a.dataset.searcherApplied) return;
+                    a.innerHTML = '<div style="font-size:24px; font-weight:bold; color:#38bdf8; font-family:sans-serif; margin:8px 12px; display:flex; align-items:center; line-height: 1;">Searcher</div>';
+                    a.dataset.searcherApplied = "true";
+                    a.style.textDecoration = 'none';
+                });
+                
+                // For main page Google logo
+                let mainLogos = document.querySelectorAll('img[alt="Google"]');
+                mainLogos.forEach(img => {
+                    if (img.dataset.searcherApplied) return;
+                    img.style.display = 'none';
+                    let div = document.createElement('div');
+                    div.innerText = 'Searcher';
+                    div.style.fontSize = '80px';
+                    div.style.fontWeight = 'bold';
+                    div.style.color = '#38bdf8';
+                    div.style.textAlign = 'center';
+                    div.style.fontFamily = 'sans-serif';
+                    img.parentElement.appendChild(div);
+                    img.dataset.searcherApplied = "true";
+                });
+                
+                // Change title
+                if (document.title.includes('Google')) {
+                    document.title = document.title.replace('Google Search', 'Searcher').replace('Google', 'Searcher');
+                }
+            }
+
+            if (window.location.hostname.includes('google.')) {
+                document.addEventListener('DOMContentLoaded', injectSearcherBrand);
+                setInterval(injectSearcherBrand, 200); // Handle dynamic JS updates
+            }
+        })();
+        """)
+        script.setInjectionPoint(QWebEngineScript.InjectionPoint.DocumentCreation)
+        script.setWorldId(QWebEngineScript.ScriptWorldId.MainWorld)
+        script.setRunsOnSubFrames(False)
+        QWebEngineProfile.defaultProfile().scripts().insert(script)
+        
     def add_new_tab(self, qurl=None, label="New Tab"):
         """Adds a new tab containing a QWebEngineView."""
         if qurl is None:
