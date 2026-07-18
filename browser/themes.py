@@ -5,11 +5,11 @@ Theme definitions for the Searcher Browser.
 def get_dark_theme():
     return """
     QMainWindow {
-        background-color: #222222;
+        background-color: #121417;
     }
     QToolBar {
-        background-color: #1e1e1e;
-        border-bottom: none;
+        background-color: #121417;
+        border-bottom: 1px solid #2a2a2a;
         padding: 5px;
         spacing: 5px;
     }
@@ -24,35 +24,39 @@ def get_dark_theme():
         background: #2a2a2a;
     }
     QLineEdit {
-        background-color: #0f0f0f;
+        background-color: #1a1c1e;
         color: #ffffff;
-        border-radius: 12px;
-        padding: 6px 12px;
+        border-radius: 16px;
+        padding: 8px 16px;
         font-size: 13px;
-        border: 1px solid #00d2ff;
-        margin: 0px 10px;
+        border: 1px solid #2a2a2a;
+        margin: 4px 10px;
+    }
+    QLineEdit:focus {
+        border: 1px solid #38bdf8;
     }
     QTabBar {
-        background-color: #1e1e1e;
+        background-color: #121417;
     }
     QTabBar::tab {
-        background-color: #1e1e1e;
+        background-color: transparent;
         color: #9ca3af;
-        padding: 8px 16px;
+        padding: 10px 20px;
         border: none;
         min-width: 120px;
-        font-size: 12px;
+        font-size: 13px;
+        border-bottom: 2px solid transparent;
     }
     QTabBar::tab:selected {
-        background-color: #222222;
         color: #ffffff;
-        border-top: 2px solid #00d2ff;
+        border-bottom: 2px solid #38bdf8;
     }
     QTabBar::tab:hover:!selected {
-        background-color: #252525;
+        background-color: #1c1e22;
+        border-radius: 6px;
     }
     QStatusBar {
-        background-color: #1e1e1e;
+        background-color: #121417;
         color: #9ca3af;
     }
     QProgressBar {
@@ -63,11 +67,11 @@ def get_dark_theme():
         color: transparent;
     }
     QProgressBar::chunk {
-        background-color: #00d2ff;
+        background-color: #38bdf8;
         border-radius: 2px;
     }
     QDialog {
-        background-color: #222222;
+        background-color: #121417;
         color: #ffffff;
     }
     QLabel {

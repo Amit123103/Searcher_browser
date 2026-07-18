@@ -24,28 +24,28 @@ class AISidebar(QDockWidget):
             }
             QDockWidget::title {
                 text-align: left;
-                background: #17191C;
-                padding: 10px;
-                color: #38BDF8;
+                background: #181a1f;
+                padding: 12px;
+                color: #e2e8f0;
             }
             QWidget#SidebarContainer {
-                background-color: #17191C;
-                border-left: 1px solid #23272E;
+                background-color: #181a1f;
+                border-left: 1px solid #2a2f38;
             }
             QFrame#SummaryCard {
-                background-color: #1C1F26;
-                border: 1px solid #2A2F38;
+                background-color: #21262d;
+                border: 1px solid #30363d;
                 border-radius: 12px;
             }
             QLabel#SummaryTitle {
-                color: #94A3B8;
+                color: #8b949e;
                 font-size: 11px;
                 font-weight: 700;
                 text-transform: uppercase;
                 letter-spacing: 1px;
             }
             QLabel#SummaryText {
-                color: #E2E8F0;
+                color: #c9d1d9;
                 font-size: 13px;
                 line-height: 1.5;
             }
@@ -53,36 +53,36 @@ class AISidebar(QDockWidget):
                 text-align: left;
                 background-color: transparent;
                 border: none;
-                color: #E2E8F0;
+                color: #c9d1d9;
                 padding: 10px 5px;
                 font-size: 13px;
                 font-weight: 500;
             }
             QPushButton.ActionBtn:hover {
-                color: #38BDF8;
+                color: #38bdf8;
                 background-color: rgba(56, 189, 248, 0.05);
                 border-radius: 6px;
             }
             QLineEdit#ChatInput {
-                background-color: #1C1F26;
-                border: 1px solid #2A2F38;
+                background-color: #0d1117;
+                border: 1px solid #30363d;
                 border-radius: 20px;
                 padding: 10px 40px 10px 15px;
-                color: #F8FAFC;
+                color: #f8fafc;
                 font-size: 13px;
             }
             QLineEdit#ChatInput:focus {
-                border: 1px solid #38BDF8;
+                border: 1px solid #38bdf8;
             }
             QPushButton#SendBtn {
-                background-color: #38BDF8;
+                background-color: #8ab4f8;
                 border: none;
                 border-radius: 14px;
                 width: 28px;
                 height: 28px;
             }
             QPushButton#SendBtn:hover {
-                background-color: #7DD3FC;
+                background-color: #a1c2f9;
             }
         """)
         
