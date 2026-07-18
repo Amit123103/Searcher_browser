@@ -5,47 +5,46 @@ Theme definitions for the Searcher Browser.
 def get_dark_theme():
     return """
     QMainWindow {
-        background-color: #0d1117;
+        background-color: #121417;
     }
     QToolBar {
-        background-color: #161b22;
-        border-bottom: 1px solid #30363d;
+        background-color: #121417;
+        border-bottom: 1px solid #2a2a2a;
         padding: 5px;
         spacing: 5px;
     }
     QToolButton {
         background: transparent;
         border: none;
-        border-radius: 6px;
+        border-radius: 4px;
         padding: 6px;
-        color: #e2e8f0;
+        color: #e8eaed;
     }
     QToolButton:hover {
-        background: rgba(255, 255, 255, 0.1);
+        background: #2a2a2a;
     }
     QLineEdit {
-        background-color: #0d1117;
+        background-color: #1a1c1e;
         color: #ffffff;
-        border-radius: 18px;
+        border-radius: 16px;
         padding: 8px 16px;
         font-size: 13px;
-        border: 1px solid #30363d;
+        border: 1px solid #2a2a2a;
         margin: 4px 10px;
     }
     QLineEdit:focus {
         border: 1px solid #38bdf8;
     }
     QTabBar {
-        background-color: #0d1117;
+        background-color: #121417;
     }
     QTabBar::tab {
         background-color: transparent;
-        color: #8b949e;
-        padding: 12px 24px;
+        color: #9ca3af;
+        padding: 10px 20px;
         border: none;
         min-width: 120px;
         font-size: 13px;
-        font-weight: 500;
         border-bottom: 2px solid transparent;
     }
     QTabBar::tab:selected {
@@ -53,17 +52,17 @@ def get_dark_theme():
         border-bottom: 2px solid #38bdf8;
     }
     QTabBar::tab:hover:!selected {
-        background-color: rgba(255, 255, 255, 0.05);
+        background-color: #1c1e22;
         border-radius: 6px;
     }
     QStatusBar {
-        background-color: #0d1117;
-        color: #8b949e;
+        background-color: #121417;
+        color: #9ca3af;
     }
     QProgressBar {
         border: none;
         border-radius: 2px;
-        background-color: #30363d;
+        background-color: #252525;
         text-align: center;
         color: transparent;
     }
@@ -72,27 +71,27 @@ def get_dark_theme():
         border-radius: 2px;
     }
     QDialog {
-        background-color: #0d1117;
+        background-color: #121417;
         color: #ffffff;
     }
     QLabel {
         color: #ffffff;
     }
     QPushButton {
-        background-color: #1e293b;
+        background-color: #2a2a2a;
         color: #ffffff;
-        border: 1px solid #30363d;
+        border: 1px solid #333333;
         padding: 8px 16px;
         border-radius: 8px;
     }
     QPushButton:hover {
-        background-color: #334155;
-        border: 1px solid #0ea5e9;
+        background-color: #333333;
+        border: 1px solid #00d2ff;
     }
     QListWidget {
-        background-color: #161b22;
+        background-color: #1e1e1e;
         color: #ffffff;
-        border: 1px solid #30363d;
+        border: 1px solid #333333;
         border-radius: 8px;
     }
     """
