@@ -3,200 +3,238 @@ name: Build Multi-Platform Releases
 on:
   push:
     tags:
-      - 'v*'  # Trigger on version tags like v1.0.0
+      - 'v*'
+
+permissions:
+  contents: write
 
 jobs:
   build-windows:
     runs-on: windows-latest
     name: Build Windows (EXE)
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-          cache: 'pip'
       
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pyinstaller
+          pip install PyQt6 PyQt6-WebEngine requests pyinstaller
       
-      - name: Build Windows executable
+      - name: Build Windows executable with PyInstaller
         run: |
-          pyinstaller Searcher.spec
+          pyinstaller --name Searcher --onefile --windowed --add-data "assets;assets" main.py
       
-      - name: Create installer (NSIS)
-        uses: joncloud/makensis-action@v3.7
-        with:
-          script-file: "installer.nsi"
+      - name: Verify build
+        run: |
+          if (Test-Path "dist/Searcher.exe") { 
+            Write-Host "✓ Searcher.exe built successfully"
+          } else {
+            Write-Host "✗ Build failed"
+            exit 1
+          }
       
-      - name: Upload executable artifact
+      - name: Upload Windows EXE
         uses: actions/upload-artifact@v3
         with:
-          name: Searcher-Windows-exe
+          name: searcher-windows-exe
           path: dist/Searcher.exe
-      
-      - name: Upload installer artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: Searcher-Windows-installer
-          path: SearcherBrowserInstaller.exe
+          retention-days: 5
+
 
   build-macos:
     runs-on: macos-latest
-    name: Build macOS (DMG)
+    name: Build macOS (DMG/App)
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-          cache: 'pip'
       
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pyinstaller
+          pip install PyQt6 PyQt6-WebEngine requests pyinstaller
       
       - name: Build macOS app
         run: |
-          pyinstaller --name Searcher \
-            --onedir \
-            --windowed \
-            --icon assets/logo/logo.icns \
-            --add-data assets:assets \
-            main.py
+          pyinstaller --name Searcher --onedir --windowed --add-data "assets:assets" main.py
+      
+      - name: Verify build
+        run: |
+          if [ -d "dist/Searcher.app" ]; then
+            echo "✓ Searcher.app built successfully"
+          else
+            echo "✗ Build failed"
+            exit 1
+          fi
       
       - name: Create DMG
         run: |
           brew install create-dmg
           create-dmg \
             --volname "Searcher" \
-            --window-pos 200 120 \
-            --window-size 600 300 \
+            --window-x 200 --window-y 120 \
+            --window-width 600 --window-height 300 \
             --icon-size 100 \
             --icon "Searcher.app" 175 120 \
-            --hide-extension "Searcher.app" \
             --app-drop-link 425 120 \
-            "Searcher.dmg" \
+            "dist/Searcher.dmg" \
             "dist/"
       
-      - name: Upload macOS app artifact
+      - name: Upload macOS App
         uses: actions/upload-artifact@v3
         with:
-          name: Searcher-macOS-app
+          name: searcher-macos-app
           path: dist/Searcher.app
+          retention-days: 5
       
-      - name: Upload macOS DMG artifact
+      - name: Upload macOS DMG
         uses: actions/upload-artifact@v3
         with:
-          name: Searcher-macOS-dmg
-          path: Searcher.dmg
+          name: searcher-macos-dmg
+          path: dist/Searcher.dmg
+          retention-days: 5
+
 
   build-linux:
     runs-on: ubuntu-latest
     name: Build Linux (AppImage)
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-          cache: 'pip'
       
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            libqt6gui6 \
-            libqt6core6 \
-            libgl1-mesa-glx \
-            libxkbcommon-x11-0
+          sudo apt-get install -y libqt6gui6 libqt6core6 libgl1-mesa-glx libxkbcommon-x11-0 patchelf
       
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pyinstaller
+          pip install PyQt6 PyQt6-WebEngine requests pyinstaller
       
       - name: Build Linux executable
         run: |
-          pyinstaller --name Searcher \
-            --onedir \
-            --add-data assets:assets \
-            main.py
+          pyinstaller --name Searcher --onedir --add-data "assets:assets" main.py
       
-      - name: Create AppImage
+      - name: Verify build
+        run: |
+          if [ -f "dist/Searcher/Searcher" ]; then
+            echo "✓ Searcher executable built successfully"
+          else
+            echo "✗ Build failed"
+            exit 1
+          fi
+      
+      - name: Download AppImage tools
         run: |
           wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
           chmod +x linuxdeploy-x86_64.AppImage
+      
+      - name: Create AppImage
+        run: |
           ./linuxdeploy-x86_64.AppImage --appdir dist/Searcher --output appimage
       
-      - name: Upload Linux AppImage artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: Searcher-Linux-AppImage
-          path: "Searcher-*.AppImage"
+      - name: List created files
+        run: ls -lah Searcher*.AppImage 2>/dev/null || echo "AppImage creation attempted"
       
-      - name: Upload Linux executable artifact
+      - name: Upload Linux AppImage
         uses: actions/upload-artifact@v3
         with:
-          name: Searcher-Linux-exe
+          name: searcher-linux-appimage
+          path: Searcher*.AppImage
+          retention-days: 5
+      
+      - name: Upload Linux Executable
+        uses: actions/upload-artifact@v3
+        with:
+          name: searcher-linux-exe
           path: dist/Searcher
+          retention-days: 5
+
 
   create-release:
     needs: [build-windows, build-macos, build-linux]
     runs-on: ubuntu-latest
     name: Create GitHub Release
+    if: always()
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Download all artifacts
         uses: actions/download-artifact@v3
+        with:
+          path: release-artifacts
+      
+      - name: List artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          find release-artifacts -type f -exec ls -lh {} \;
       
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            Searcher-Windows-exe/Searcher.exe
-            Searcher-Windows-installer/SearcherBrowserInstaller.exe
-            Searcher-macOS-dmg/Searcher.dmg
-            Searcher-Linux-AppImage/Searcher-*.AppImage
           draft: false
           prerelease: false
+          files: |
+            release-artifacts/**/*.exe
+            release-artifacts/**/*.dmg
+            release-artifacts/**/*.AppImage
+            release-artifacts/searcher-linux-exe/Searcher
           body: |
-            # Searcher Browser v${{ github.ref_name }}
+            # Searcher Browser ${{ github.ref_name }}
             
-            Download your platform's version:
-            - **Windows**: Use `SearcherBrowserInstaller.exe` (recommended) or `Searcher.exe`
-            - **macOS**: Use `Searcher.dmg` (drag & drop to Applications)
-            - **Linux**: Use `Searcher.AppImage` (make executable and run)
+            Cross-platform desktop browser with AI Assistant, Ad Blocker, and more!
             
-            ## Installation Instructions
+            ## 📥 Download
+            
+            - **Windows**: `Searcher.exe` (portable) or use installer
+            - **macOS**: `Searcher.dmg` (drag to Applications)
+            - **Linux**: `Searcher.AppImage` (make executable and run)
+            
+            ## 🚀 Quick Start
             
             ### Windows
-            1. Download `SearcherBrowserInstaller.exe`
-            2. Double-click to run installer
-            3. Click "Install"
-            4. Searcher Browser will open automatically
+            ```
+            1. Download Searcher.exe
+            2. Double-click to run
+            ```
             
             ### macOS
-            1. Download `Searcher.dmg`
+            ```
+            1. Download Searcher.dmg
             2. Double-click to mount
-            3. Drag Searcher app to Applications folder
-            4. Open Applications and double-click Searcher
+            3. Drag Searcher.app to Applications
+            4. Launch from Applications
+            ```
             
             ### Linux
-            1. Download `Searcher.AppImage`
-            2. Right-click → Properties → Permissions → Make executable
-            3. Double-click to run, or: `./Searcher.AppImage`
+            ```
+            chmod +x Searcher.AppImage
+            ./Searcher.AppImage
+            ```
             
-            Enjoy your Searcher Browser! 🚀
+            ## ✨ Features
+            - 🤖 AI Assistant (summarize, Q&A, notes)
+            - 🛡️ Ad Blocker & Privacy Mode
+            - 📱 Responsive Design
+            - 🔍 Custom Search with DuckDuckGo
+            - 💾 Offline Support
+            
+            ## 📖 Documentation
+            See [GitHub Repository](https://github.com/Amit123103/Searcher_browser) for full docs.
+            
+            Enjoy! 🎉
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
