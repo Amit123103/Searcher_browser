@@ -310,6 +310,7 @@ class SettingsTab(QWidget):
         # 0. General Page
         # ==========================================
         gen_lay = QVBoxLayout()
+        from PyQt6.QtWidgets import QFrame
         user_card = QFrame()
         user_card.setProperty("class", "SettingsCard")
         user_layout = QVBoxLayout(user_card)
