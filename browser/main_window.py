@@ -139,13 +139,7 @@ class MainWindow(QMainWindow):
             
         self.tabs.add_new_tab = new_add_tab
         
-        # Initialize Navigation Bar
-        self.nav_bar = NavigationBar(self)
-        self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.nav_bar)
-        
-        # Add Tabs to layout
-        self.layout.addWidget(self.tabs)
-        
+        # (Removed redundant nav_bar creation)
         # Initialize Status Bar
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
