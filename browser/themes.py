@@ -91,13 +91,13 @@ def get_dark_theme():
     QTabBar::close-button {
         image: url(assets/icons/close_white.svg);
         subcontrol-position: right;
-        padding: 4px;
-        width: 14px;
-        height: 14px;
+        margin-right: 8px;
+        width: 10px;
+        height: 10px;
     }
     QTabBar::close-button:hover {
         background-color: rgba(255, 255, 255, 0.2);
-        border-radius: 7px;
+        border-radius: 5px;
     }
     QStatusBar {
         background-color: #0B1220;
