@@ -295,21 +295,60 @@ class SettingsTab(QWidget):
         content_layout.addWidget(header_title)
         content_layout.addWidget(header_subtitle)
         
-        grid_layout = QHBoxLayout()
-        grid_layout.setSpacing(30)
+        from PyQt6.QtWidgets import QStackedWidget
+        self.stacked_pages = QStackedWidget()
         
-        left_col = QVBoxLayout()
-        left_col.setSpacing(24)
+        def create_page(layout_content):
+            page = QWidget()
+            page_lay = QVBoxLayout(page)
+            page_lay.setContentsMargins(0, 20, 0, 0)
+            page_lay.addLayout(layout_content)
+            page_lay.addStretch()
+            return page
+
+        # ==========================================
+        # 0. General Page
+        # ==========================================
+        gen_lay = QVBoxLayout()
+        user_card = QFrame()
+        user_card.setProperty("class", "SettingsCard")
+        user_layout = QVBoxLayout(user_card)
+        user_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
-        # Appearance Card
-        from PyQt6.QtWidgets import QFrame
+        avatar = QLabel()
+        avatar.setFixedSize(80, 80)
+        avatar.setStyleSheet("background-color: #1e293b; border-radius: 40px; margin-top: 10px;")
+        
+        uname = QLabel("Alex Nova")
+        uname.setStyleSheet("font-size: 20px; font-weight: bold; color: #ffffff; margin-top: 12px;")
+        uname.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        umail = QLabel("alex.nova@searcher.ai")
+        umail.setStyleSheet("font-size: 13px; color: #cbd5e1; margin-bottom: 20px;")
+        umail.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        manage_btn = QPushButton("Manage Account")
+        manage_btn.setStyleSheet("background-color: #334155; color: #ffffff; border-radius: 14px; padding: 12px; border: none; font-weight: 500;")
+        
+        user_layout.addWidget(avatar, alignment=Qt.AlignmentFlag.AlignCenter)
+        user_layout.addWidget(uname)
+        user_layout.addWidget(umail)
+        user_layout.addWidget(manage_btn, alignment=Qt.AlignmentFlag.AlignCenter)
+        gen_lay.addWidget(user_card)
+
+        # ==========================================
+        # 1. Appearance Page
+        # ==========================================
+        app_lay = QVBoxLayout()
+        app_lay.setSpacing(24)
+        
         app_card = QFrame()
         app_card.setProperty("class", "SettingsCard")
-        app_layout = QVBoxLayout(app_card)
+        app_card_layout = QVBoxLayout(app_card)
         
         app_title = QLabel("🎨 Appearance")
         app_title.setProperty("class", "CardTitle")
-        app_layout.addWidget(app_title)
+        app_card_layout.addWidget(app_title)
         
         theme_inner = QFrame()
         theme_inner.setProperty("class", "InnerCard")
@@ -332,7 +371,6 @@ class SettingsTab(QWidget):
         self.btn_light = QPushButton("Light")
         self.btn_dark = QPushButton("Dark")
         
-        # Set initial style based on current setting
         current_theme = self.settings_manager.get("theme", "dark")
         if current_theme == "light":
             self.btn_light.setProperty("class", "ToggleActive")
@@ -349,9 +387,8 @@ class SettingsTab(QWidget):
         
         theme_inner_lay.addLayout(theme_labels)
         theme_inner_lay.addWidget(theme_toggle_bg)
-        app_layout.addWidget(theme_inner)
+        app_card_layout.addWidget(theme_inner)
         
-        # Typography inner
         typo_inner = QFrame()
         typo_inner.setProperty("class", "InnerCard")
         typo_lay = QVBoxLayout(typo_inner)
@@ -377,10 +414,13 @@ class SettingsTab(QWidget):
         fonts_lay.addWidget(self.btn_poppins)
         typo_lay.addLayout(fonts_lay)
         
-        app_layout.addWidget(typo_inner)
-        left_col.addWidget(app_card)
-        
-        # AI Prefs Card
+        app_card_layout.addWidget(typo_inner)
+        app_lay.addWidget(app_card)
+
+        # ==========================================
+        # 2. AI Preferences Page
+        # ==========================================
+        ai_lay = QVBoxLayout()
         ai_card = QFrame()
         ai_card.setProperty("class", "SettingsCard")
         ai_layout = QVBoxLayout(ai_card)
@@ -427,41 +467,27 @@ class SettingsTab(QWidget):
         self.update_switch_ui("insights", self.settings_manager.get("ai_insights", True))
         self.update_switch_ui("prefetch", self.settings_manager.get("ai_prefetch", False))
         ai_layout.addWidget(prefetch_inner)
-        
-        left_col.addWidget(ai_card)
-        left_col.addStretch()
-        
-        # Right Column
-        right_col = QVBoxLayout()
-        right_col.setSpacing(24)
-        
-        user_card = QFrame()
-        user_card.setObjectName("UserCard")
-        user_layout = QVBoxLayout(user_card)
-        user_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        avatar = QLabel()
-        avatar.setFixedSize(80, 80)
-        avatar.setStyleSheet("background-color: #1e293b; border-radius: 40px; margin-top: 10px;")
-        
-        uname = QLabel("Alex Nova")
-        uname.setObjectName("UserName")
-        uname.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        umail = QLabel("alex.nova@searcher.ai")
-        umail.setObjectName("UserEmail")
-        umail.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        manage_btn = QPushButton("Manage Account")
-        manage_btn.setObjectName("ManageAccountBtn")
-        
-        user_layout.addWidget(avatar, alignment=Qt.AlignmentFlag.AlignCenter)
-        user_layout.addWidget(uname)
-        user_layout.addWidget(umail)
-        user_layout.addWidget(manage_btn)
-        
-        right_col.addWidget(user_card)
-        
+        ai_lay.addWidget(ai_card)
+
+        # ==========================================
+        # 3. Privacy & Security Page
+        # ==========================================
+        priv_lay = QVBoxLayout()
+        priv_card = QFrame()
+        priv_card.setProperty("class", "SettingsCard")
+        priv_card_lay = QVBoxLayout(priv_card)
+        priv_title = QLabel("🔒 Privacy & Security")
+        priv_title.setProperty("class", "CardTitle")
+        priv_info = QLabel("Manage your data, cookies, and tracking preferences.")
+        priv_info.setStyleSheet("color: #cbd5e1; font-size: 14px; margin-top: 10px;")
+        priv_card_lay.addWidget(priv_title)
+        priv_card_lay.addWidget(priv_info)
+        priv_lay.addWidget(priv_card)
+
+        # ==========================================
+        # 4. Sync Page
+        # ==========================================
+        sync_lay = QVBoxLayout()
         sync_card = QFrame()
         sync_card.setProperty("class", "SettingsCard")
         sync_layout = QVBoxLayout(sync_card)
@@ -471,20 +497,25 @@ class SettingsTab(QWidget):
         sync_info.setStyleSheet("color: #e2e8f0; font-size: 13px; line-height: 1.5; margin-top: 10px;")
         sync_layout.addWidget(sync_title)
         sync_layout.addWidget(sync_info)
+        sync_lay.addWidget(sync_card)
+
+        # Add all pages to stacked widget
+        self.stacked_pages.addWidget(create_page(gen_lay))
+        self.stacked_pages.addWidget(create_page(app_lay))
+        self.stacked_pages.addWidget(create_page(ai_lay))
+        self.stacked_pages.addWidget(create_page(priv_lay))
+        self.stacked_pages.addWidget(create_page(sync_lay))
         
-        right_col.addWidget(sync_card)
-        right_col.addStretch()
+        content_layout.addWidget(self.stacked_pages)
         
-        grid_layout.addLayout(left_col, 2)
-        grid_layout.addLayout(right_col, 1)
-        
-        content_layout.addLayout(grid_layout)
+        # Connect Navigation
+        self.nav_list.currentRowChanged.connect(self.stacked_pages.setCurrentIndex)
         
         from PyQt6.QtWidgets import QScrollArea
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
         scroll_area.setWidget(content_container)
-        scroll_area.setStyleSheet("QScrollArea { border: none; background-color: #ffffff; }")
+        scroll_area.setStyleSheet("QScrollArea { border: none; background-color: transparent; }")
         
         main_layout.addWidget(scroll_area)
 
