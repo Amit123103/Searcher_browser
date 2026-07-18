@@ -85,9 +85,10 @@ class BrowserTabWidget(QTabWidget):
         return self.currentWidget()
         
     def close_tab(self, i):
-        """Closes the tab at index i. If it's the last tab, don't close it (or open a new one)."""
-        if self.count() < 2:
-            return # Don't close the last tab
+        """Closes the tab at index i. If it's the last tab, close the window."""
+        if self.count() == 1:
+            self.window().close()
+            return
             
         # Save URL before closing
         browser = self.widget(i)
