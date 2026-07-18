@@ -16,6 +16,11 @@ class SearcherPage(QWebEnginePage):
         # Allow all navigation by default
         return super().acceptNavigationRequest(url, _type, isMainFrame)
 
+    def createWindow(self, _type):
+        """Handle links that request opening in a new window (e.g. target='_blank') by opening a new tab."""
+        new_browser = self.parent_tabs.add_new_tab()
+        return new_browser.page()
+
 class BrowserTabWidget(QTabWidget):
     """
     Custom Tab Widget for Searcher Browser to manage web engine views.
