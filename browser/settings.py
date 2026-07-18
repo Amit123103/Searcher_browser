@@ -629,10 +629,11 @@ class SettingsTab(QWidget):
             QMessageBox.information(self, "Workspace Created", f"Successfully created workspace: {name.strip()}")
         
     def update_switch_ui(self, key, is_on):
-        switch_map = {
-            "insights": self.switch_insights,
-            "prefetch": self.switch_prefetch,
-        }
+        switch_map = {}
+        if hasattr(self, "switch_insights"):
+            switch_map["insights"] = self.switch_insights
+        if hasattr(self, "switch_prefetch"):
+            switch_map["prefetch"] = self.switch_prefetch
         if hasattr(self, "switch_restore"):
             switch_map["restore"] = self.switch_restore
         
