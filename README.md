@@ -7,6 +7,8 @@
 - **Modern Interface**: Clean design with dynamic Light and Dark mode themes.
 - **AI Assistant**: A built-in sidebar to summarize web pages, generate notes, and answer questions.
 - **Smart Tabs**: Automatically organize and group your tabs by topic using AI.
+- **Mobile Emulation View**: Toggle a mobile phone view to seamlessly test and browse mobile-optimized websites.
+- **Automatic Offline Mode & Search**: Automatically caches web pages and features an intelligent Offline Search fallback (searching history and bookmarks) when you lose your internet connection. Also includes a built-in offline dinosaur-style mini-game!
 - **Privacy & Security**: Incognito mode, built-in Ad Blocker, and an integrated Password Manager.
 - **Productivity**: Browsing history, bookmarks, session restore, and download manager.
 - **Custom Start Page**: A fast, local HTML start page with a built-in search bar and quick links.
@@ -39,7 +41,18 @@ python main.py
 
 ---
 
-## How to Deploy (Create a Standalone Executable)
+## How to Download and Use (For Anyone)
+
+If you just want to use the Searcher browser without installing Python, you can download the ready-to-use application!
+
+1. Go to the **Releases** section on this GitHub repository (look for the "Releases" tag on the right side of the page).
+2. Download the `Searcher.zip` or `Searcher.exe` file from the latest release.
+3. Extract the folder (if downloaded as a zip) and double-click `Searcher.exe` to start browsing!
+4. **No installation required!** The browser is fully portable.
+
+---
+
+## How to Deploy (Create a Standalone Executable for Developers)
 
 To distribute the Searcher browser so others can run it without installing Python or any dependencies, you can package it into a standalone `.exe` file using **PyInstaller**.
 
