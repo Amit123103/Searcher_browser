@@ -162,6 +162,35 @@
         }
         .main-search-input::placeholder { color: #CBD5E1; }
         
+        .search-suggestions {
+            position: absolute;
+            top: calc(100% + 12px);
+            left: 0;
+            right: 0;
+            background: rgba(11, 18, 32, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            z-index: 100;
+            overflow: hidden;
+        }
+        .suggestion-item {
+            padding: 14px 24px;
+            color: #c9d1d9;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        .suggestion-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #38bdf8;
+            padding-left: 32px;
+        }
+        
         .main-search-icon {
             position: absolute;
             left: 24px;
@@ -391,7 +420,13 @@
 
             <div class="main-search-container">
                 <svg class="main-search-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                <input type="text" id="searchInput" class="main-search-input" placeholder="Search Google or type a URL" autofocus>
+                <input type="text" id="searchInput" class="main-search-input" placeholder="What do you want to know?" autofocus>
+                <div id="searchSuggestions" class="search-suggestions" style="display: none;">
+                    <div class="suggestion-item">🔍 Search with Google</div>
+                    <div class="suggestion-item">🎯 Quick Answer</div>
+                    <div class="suggestion-item">📚 Research</div>
+                    <div class="suggestion-item">💡 New Ideas</div>
+                </div>
                 <div class="main-search-actions">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" title="Voice Search"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary-color)" title="Search with AI"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
@@ -468,21 +503,63 @@
     </div>
     
     <script>
-        // Make the search input work (it communicates with Python via a basic redirect or we can just redirect to google for now to test)
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const query = this.value;
-                if (query) {
-                    if (query.startsWith('http://') || query.startsWith('https://')) {
-                        window.location.href = query;
-                    } else if (query.includes('.') && !query.includes(' ')) {
-                        window.location.href = 'https://' + query;
-                    } else {
-                        window.location.href = 'https://www.google.com/search?q=' + encodeURIComponent(query);
-                    }
-                }
+        const searchInput = document.getElementById('searchInput');
+        const searchSuggestions = document.getElementById('searchSuggestions');
+        const suggestionItems = document.querySelectorAll('.suggestion-item');
+        
+        // Show suggestions when search input is focused
+        searchInput.addEventListener('focus', function() {
+            if (searchInput.value === '') {
+                searchSuggestions.style.display = 'block';
             }
         });
+        
+        // Hide suggestions when input loses focus (with delay to allow click)
+        searchInput.addEventListener('blur', function() {
+            setTimeout(() => {
+                searchSuggestions.style.display = 'none';
+            }, 200);
+        });
+        
+        // Show suggestions when typing
+        searchInput.addEventListener('input', function() {
+            if (this.value !== '') {
+                searchSuggestions.style.display = 'block';
+            } else {
+                searchSuggestions.style.display = 'block';
+            }
+        });
+        
+        // Handle suggestion click
+        suggestionItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const query = searchInput.value || this.textContent;
+                performSearch(query);
+            });
+        });
+        
+        // Make the search input work
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch(this.value);
+            }
+        });
+        
+        function performSearch(query) {
+            if (query) {
+                if (query.startsWith('http://') || query.startsWith('https://')) {
+                    window.location.href = query;
+                } else if (query.includes('.') && !query.includes(' ') && !query.includes('Search') && !query.includes('Quick') && !query.includes('Research') && !query.includes('Ideas')) {
+                    window.location.href = 'https://' + query;
+                } else {
+                    // Use custom Searcher search results page instead of Google
+                    window.location.href = 'search_results.html?q=' + encodeURIComponent(query);
+                }
+            }
+        }
+        
+        // Hide address bar for fullscreen experience (works in some browsers)
+        window.scrollTo(0, 1);
     </script>
 </body>
 </html>

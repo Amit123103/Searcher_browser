@@ -220,6 +220,12 @@ class MainWindow(QMainWindow):
         QShortcut(QKeySequence("Ctrl+H"), self).activated.connect(self.show_history)
         QShortcut(QKeySequence("Ctrl+D"), self).activated.connect(self.bookmark_current_page)
         
+        # Navigation shortcuts
+        QShortcut(QKeySequence("Alt+Left"), self).activated.connect(self.nav_bar.navigate_back)
+        QShortcut(QKeySequence("Alt+Right"), self).activated.connect(self.nav_bar.navigate_forward)
+        QShortcut(QKeySequence("F5"), self).activated.connect(self.nav_bar.navigate_reload)
+        QShortcut(QKeySequence("Ctrl+R"), self).activated.connect(self.nav_bar.navigate_reload)
+        
     def open_incognito(self):
         self.incognito_window = MainWindow(is_incognito=True)
         self.incognito_window.show()

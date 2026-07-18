@@ -193,8 +193,23 @@ class AISidebar(QDockWidget):
         question = self.input_field.text().strip()
         if not question:
             return
-            
-        self.input_field.clear()
-        self.summary_text.setText(f"You asked: {question}\n\nAI is thinking...")
         
-        self.get_page_content(lambda text: self.summary_text.setText(self.ai_service.answer_question(text, question)))
+        # Store the question for the callback
+        self.current_question = question
+        self.input_field.clear()
+        self.summary_text.setText(f"💭 You asked: \"{question}\"\n\n⏳ AI is thinking...")
+        
+        # Get page content and process the response
+        self.get_page_content(self._handle_ai_response)
+    
+    def _handle_ai_response(self, page_text):
+        """Handle the AI response after page content is retrieved."""
+        try:
+            if hasattr(self, 'current_question'):
+                response = self.ai_service.answer_question(page_text, self.current_question)
+                self.summary_text.setText(response)
+                delattr(self, 'current_question')
+            else:
+                self.summary_text.setText("Error: Question not found. Please try again.")
+        except Exception as e:
+            self.summary_text.setText(f"Error: {str(e)}\n\nPlease try again.")

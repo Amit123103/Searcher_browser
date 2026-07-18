@@ -40,10 +40,24 @@ class BrowserTabWidget(QTabWidget):
         super().__init__(parent)
         self.setDocumentMode(True) # Removes extra borders around the tab widget
         self.setTabsClosable(True)
-        # Ensure close button only appears on the right side
+        # Compact close button styling inside tab
         self.tabBar().setStyleSheet("""
             QTabBar::close-button {
-                subcontrol-position: right;
+                subcontrol-position: right center;
+                margin-right: 2px;
+                margin-left: 2px;
+                width: 12px;
+                height: 12px;
+                background: transparent;
+                border-radius: 2px;
+                image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="%23666666" d="M2 2l8 8M10 2L2 10" stroke="%23666666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+            }
+            QTabBar::close-button:hover {
+                background-color: #e74c3c;
+                image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="%23ffffff" d="M2 2l8 8M10 2L2 10" stroke="%23ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+            }
+            QTabBar::close-button:pressed {
+                background-color: #c0392b;
             }
         """)
         self.tabCloseRequested.connect(self.close_tab)
@@ -197,13 +211,7 @@ class BrowserTabWidget(QTabWidget):
             # Update toolbar back/forward buttons enabled states based on history
             main_window = self.window()
             if hasattr(main_window, 'nav_bar'):
-                if hasattr(browser, 'page'):
-                    main_window.nav_bar.back_btn.setEnabled(browser.page().history().canGoBack())
-                    main_window.nav_bar.forward_btn.setEnabled(browser.page().history().canGoForward())
-                else:
-                    # Native page, disable navigation
-                    main_window.nav_bar.back_btn.setEnabled(False)
-                    main_window.nav_bar.forward_btn.setEnabled(False)
+                main_window.nav_bar.update_navigation_buttons()
             
     def on_url_changed(self, qurl, browser):
         # Only emit if the signal came from the currently active tab
@@ -213,9 +221,7 @@ class BrowserTabWidget(QTabWidget):
             # Update toolbar back/forward buttons enabled states based on history
             main_window = self.window()
             if hasattr(main_window, 'nav_bar'):
-                if hasattr(browser, 'page'):
-                    main_window.nav_bar.back_btn.setEnabled(browser.page().history().canGoBack())
-                    main_window.nav_bar.forward_btn.setEnabled(browser.page().history().canGoForward())
+                main_window.nav_bar.update_navigation_buttons()
             
     def on_title_changed(self, title, browser):
         i = self.indexOf(browser)

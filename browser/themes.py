@@ -18,16 +18,25 @@ def get_dark_theme():
         background: transparent;
         border: none;
         border-radius: 8px;
-        padding: 8px;
+        padding: 8px 12px;
         color: #94A3B8;
         qproperty-iconSize: 18px 18px;
+        font-size: 16px;
+        font-weight: 500;
+        min-width: 32px;
+        min-height: 32px;
     }
     QToolButton:hover {
         background: rgba(255, 255, 255, 0.1);
+        color: #e2e8f0;
+    }
+    QToolButton:pressed {
+        background: rgba(59, 130, 246, 0.2);
+        color: #38bdf8;
     }
     QToolButton:disabled {
         background: transparent;
-        color: #555555;
+        color: #3a3a3a;
     }
     QToolButton#navBackBtn:disabled { qproperty-icon: url(assets/icons/back_black.svg); }
     QToolButton#navForwardBtn:disabled { qproperty-icon: url(assets/icons/forward_black.svg); }

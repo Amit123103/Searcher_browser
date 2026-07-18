@@ -20,10 +20,21 @@ class AIService:
         
     def answer_question(self, page_content, question):
         """Simulates answering a question based on page context."""
-        if not page_content:
-            return "I need more context from the page to answer that."
+        if not page_content or len(page_content.strip()) < 10:
+            return f"📝 **Question:** {question}\n\n❌ **Response:** I need more content from the page to provide a meaningful answer. The current page appears to be empty or not fully loaded."
             
-        return f"**Answer:**\nYou asked: '{question}'.\nBased on the current page content, here is a simulated intelligent response. In a real environment, the LLM would extract the exact answer from the {len(page_content)} characters of text provided."
+        word_count = len(page_content.split())
+        char_count = len(page_content)
+        
+        return f"""📝 **Your Question:**
+{question}
+
+✅ **AI Response:**
+Based on the {word_count} words ({char_count} characters) of content from this page, I've analyzed the information provided. The page contains relevant information about your query. 
+
+**Key Insight:** This is a simulated intelligent response. In a production environment, a real LLM would extract the most relevant information from the page content to answer your question specifically.
+
+**Tip:** Try asking follow-up questions to explore more details about this page."""
         
     def generate_notes(self, page_content):
         """Simulates generating study notes or bullet points."""
