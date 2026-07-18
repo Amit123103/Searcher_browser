@@ -100,15 +100,25 @@ class MainWindow(QMainWindow):
         # Initialize Navigation Bar
         self.nav_bar = NavigationBar(self)
         
-        # Top Row for Tabs and Buttons
+        # Top Row for Tabs and Buttons (Chrome-style: tabs on very top)
         from PyQt6.QtWidgets import QToolButton, QPushButton, QHBoxLayout
         from PyQt6.QtGui import QIcon
         
         top_row_widget = QWidget()
+        top_row_widget.setObjectName("tabBarRow")
+        top_row_widget.setStyleSheet("""
+            #tabBarRow {
+                background-color: #161b22;
+                padding: 0px;
+            }
+        """)
         top_row_layout = QHBoxLayout(top_row_widget)
-        top_row_layout.setContentsMargins(0, 0, 10, 0)
-        top_row_layout.setSpacing(10)
-        top_row_layout.addWidget(self.tabs.tabBar())
+        top_row_layout.setContentsMargins(8, 4, 8, 0)
+        top_row_layout.setSpacing(4)
+        
+        # Tab bar takes the main space
+        self.tabs.tabBar().setExpanding(False)
+        top_row_layout.addWidget(self.tabs.tabBar(), 1)
         
         # Add New Tab button (+)
         self.new_tab_btn = QToolButton(self)
@@ -116,67 +126,60 @@ class MainWindow(QMainWindow):
         self.new_tab_btn.setText("+")
         self.new_tab_btn.setToolTip("Open a new tab")
         self.new_tab_btn.clicked.connect(lambda: self.tabs.add_new_tab())
-        
-        # Ask Gemini button
-        self.ask_ai_btn = QPushButton("Ask Gemini", self)
-        assets_dir = os.path.join(os.path.dirname(__file__), '..', 'assets')
-        self.ask_ai_btn.setIcon(QIcon(os.path.join(assets_dir, 'ai.svg')))
-        self.ask_ai_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #4a3443;
-                color: #ffffff;
-                border-radius: 14px;
-                padding: 4px 12px;
-                font-size: 13px;
-                font-weight: 500;
-                border: 1px solid #5a4453;
-            }
-            QPushButton:hover {
-                background-color: #5a4453;
-            }
-        """)
-        
         top_row_layout.addWidget(self.new_tab_btn)
-        top_row_layout.addWidget(self.ask_ai_btn)
+        
         top_row_layout.addStretch()
         
-        # Add Tabs top row first, then Toolbar (Custom layout order to match mockups)
+        # Ask Gemini button (right side, like Chrome)
+        self.ask_ai_btn = QPushButton("✨ Ask Gemini", self)
+        self.ask_ai_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #2d1f3d;
+                color: #d4b8ff;
+                border-radius: 14px;
+                padding: 4px 14px;
+                font-size: 12px;
+                font-weight: 500;
+                border: 1px solid #3d2f4d;
+            }
+            QPushButton:hover {
+                background-color: #3d2f4d;
+            }
+        """)
+        self.ask_ai_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.ask_ai_btn.clicked.connect(self.toggle_ai_sidebar)
+        top_row_layout.addWidget(self.ask_ai_btn)
+        
+        # Window control buttons (minimize, maximize, close)
+        for btn_text, btn_action, btn_style in [
+            ("—", lambda: self.showMinimized(), ""),
+            ("☐", lambda: self.toggle_maximize(), ""),
+            ("✕", lambda: self.close(), "QPushButton:hover { background-color: #e81123; }")
+        ]:
+            btn = QPushButton(btn_text)
+            btn.setFixedSize(32, 28)
+            btn.setStyleSheet(f"""
+                QPushButton {{
+                    background: transparent;
+                    color: #8b949e;
+                    border: none;
+                    font-size: 12px;
+                }}
+                QPushButton:hover {{
+                    background-color: #30363d;
+                    color: #ffffff;
+                }}
+                {btn_style}
+            """)
+            btn.clicked.connect(btn_action)
+            top_row_layout.addWidget(btn)
+        
+        # Add Tabs top row first, then Toolbar
         self.layout.addWidget(top_row_widget)
         self.layout.addWidget(self.nav_bar)
         
-        # We need to add the stacked widget of the QTabWidget
-        # But QTabWidget doesn't expose it directly.
-        # So we add the entire QTabWidget, but we hide its internal tab bar,
-        # OR we just let QTabWidget handle it and set its TabPosition to North?
-        # Actually, extracting the tabBar() and adding it to the layout is a supported hack in PyQt!
+        # Add the tab widget content area (the stacked pages)
         self.layout.addWidget(self.tabs)
-        
-        # Override the tabs method to use our specific profile
-        original_add_tab = self.tabs.add_new_tab
-        def new_add_tab(qurl=None, label="New Tab"):
-            from PyQt6.QtWebEngineWidgets import QWebEngineView
-            
-            page = QWebEnginePage(self.profile, self.tabs)
-            browser = QWebEngineView(self.tabs)
-            browser.setPage(page)
-            
-            if qurl is None:
-                start_page_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "assets", "start_page.html")
-                qurl = QUrl.fromLocalFile(start_page_path)
-                
-            browser.setUrl(qurl)
-            
-            browser.urlChanged.connect(lambda url, b=browser: self.tabs.on_url_changed(url, b))
-            browser.titleChanged.connect(lambda title, b=browser: self.tabs.on_title_changed(title, b))
-            browser.loadProgress.connect(lambda p, b=browser: self.tabs.on_load_progress(p, b))
-            browser.loadStarted.connect(lambda b=browser: self.tabs.on_load_started(b))
-            browser.loadFinished.connect(lambda ok, b=browser: self.tabs.on_load_finished(ok, b))
-            
-            i = self.tabs.addTab(browser, label)
-            self.tabs.setCurrentIndex(i)
-            return browser
-            
-        self.tabs.add_new_tab = new_add_tab
         
         # (Removed redundant nav_bar creation)
         # Initialize Status Bar
@@ -310,10 +313,20 @@ class MainWindow(QMainWindow):
         else:
             self.status_bar.showMessage("Already bookmarked or invalid URL", 3000)
 
+    def toggle_maximize(self):
+        if self.isMaximized():
+            self.showNormal()
+        else:
+            self.showMaximized()
+    
     # --- AI Features Integration ---
     
-    def toggle_ai_sidebar(self, checked):
-        self.ai_sidebar.setVisible(checked)
+    def toggle_ai_sidebar(self, checked=None):
+        if checked is None:
+            # Toggle: if visible, hide; if hidden, show
+            self.ai_sidebar.setVisible(not self.ai_sidebar.isVisible())
+        else:
+            self.ai_sidebar.setVisible(checked)
         
     def get_current_page_text(self, callback):
         """Extracts text from the current webpage to pass to the AI."""
