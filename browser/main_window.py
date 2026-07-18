@@ -33,6 +33,8 @@ class MainWindow(QMainWindow):
         self.is_incognito = is_incognito
         title_suffix = " (Incognito)" if is_incognito else ""
         self.setWindowTitle(f"Searcher{title_suffix}")
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+        
         
         # Set Window Icon
         icon_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "assets", "logo.png")
@@ -115,7 +117,7 @@ class MainWindow(QMainWindow):
         top_row_widget.setObjectName("tabBarRow")
         top_row_widget.setStyleSheet("""
             #tabBarRow {
-                background-color: #161b22;
+                background-color: transparent;
                 padding: 0px;
             }
         """)
@@ -140,24 +142,20 @@ class MainWindow(QMainWindow):
         
         # Window control buttons (minimize, maximize, close)
         for btn_text, btn_action, btn_style in [
-            ("—", lambda: self.showMinimized(), ""),
-            ("☐", lambda: self.toggle_maximize(), ""),
-            ("✕", lambda: self.close(), "QPushButton:hover { background-color: #e81123; }")
+            ("—", lambda: self.showMinimized(), "background: #ffbd2e; border-radius: 6px; width: 12px; height: 12px; margin: 8px; color: transparent;"),
+            ("☐", lambda: self.toggle_maximize(), "background: #27c93f; border-radius: 6px; width: 12px; height: 12px; margin: 8px; color: transparent;"),
+            ("✕", lambda: self.close(), "background: #ff5f56; border-radius: 6px; width: 12px; height: 12px; margin: 8px; color: transparent;")
         ]:
-            btn = QPushButton(btn_text)
-            btn.setFixedSize(32, 28)
+            btn = QPushButton("")
+            btn.setFixedSize(28, 28)
             btn.setStyleSheet(f"""
                 QPushButton {{
-                    background: transparent;
-                    color: #8b949e;
+                    {btn_style}
                     border: none;
-                    font-size: 12px;
                 }}
                 QPushButton:hover {{
-                    background-color: #30363d;
-                    color: #ffffff;
+                    opacity: 0.8;
                 }}
-                {btn_style}
             """)
             btn.clicked.connect(btn_action)
             top_row_layout.addWidget(btn)
@@ -200,6 +198,17 @@ class MainWindow(QMainWindow):
         incognito_action.setShortcut("Ctrl+Shift+N")
         incognito_action.triggered.connect(self.open_incognito)
         file_menu.addAction(incognito_action)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton and event.pos().y() < 120:
+            self.dragPos = event.globalPosition().toPoint()
+            event.accept()
+
+    def mouseMoveEvent(self, event):
+        if hasattr(self, 'dragPos') and event.buttons() == Qt.MouseButton.LeftButton and event.pos().y() < 120:
+            self.move(self.pos() + event.globalPosition().toPoint() - self.dragPos)
+            self.dragPos = event.globalPosition().toPoint()
+            event.accept()
 
     def setup_shortcuts(self):
         QShortcut(QKeySequence("Ctrl+T"), self).activated.connect(self.tabs.add_new_tab)

@@ -62,3 +62,4 @@ venv.bak/
 # Project specific files (do not upload personal config or db)
 database/*.db
 config/*.json
+searcher_browser.zip

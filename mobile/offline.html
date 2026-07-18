@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0e1a">
+    <title>Searcher — Offline</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #0a0e1a;
+            color: #f1f5f9;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .offline-content {
+            text-align: center;
+            max-width: 400px;
+            z-index: 10;
+        }
+
+        .offline-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            color: #38bdf8;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .offline-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .offline-subtitle {
+            font-size: 1rem;
+            color: #94a3b8;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        .retry-btn {
+            padding: 14px 36px;
+            border-radius: 9999px;
+            border: none;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            margin-bottom: 48px;
+        }
+
+        .retry-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ==========================================
+           DINO GAME
+           ========================================== */
+        .game-section {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .game-title {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        canvas {
+            background: #111827;
+            border-radius: 16px;
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            touch-action: none;
+        }
+
+        .game-hint {
+            font-size: 0.75rem;
+            color: #475569;
+            margin-top: 10px;
+        }
+
+        .score-display {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-top: 8px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Background particles */
+        .bg-particles {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(56, 189, 248, 0.3);
+            border-radius: 50%;
+            animation: drift linear infinite;
+        }
+
+        @keyframes drift {
+            from {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            to {
+                transform: translateY(-10vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Background particles -->
+<div class="bg-particles" id="particles"></div>
+
+<div class="offline-content">
+    <svg class="offline-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+        <path d="M10.71 5.05A16 16 0 0 1 22.56 9"></path>
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+        <line x1="12" y1="20" x2="12.01" y2="20"></line>
+    </svg>
+
+    <h1 class="offline-title">You're Offline</h1>
+    <p class="offline-subtitle">No internet connection detected.<br>Check your network and try again.</p>
+
+    <button class="retry-btn" onclick="window.location.reload()">Try Again</button>
+
+    <!-- Mini Game -->
+    <div class="game-section">
+        <div class="game-title">🎮 While you wait — Jump Game</div>
+        <canvas id="game-canvas" width="360" height="160"></canvas>
+        <div class="score-display" id="score-display">Score: 0 | High Score: 0</div>
+        <div class="game-hint">Tap or press Space to jump</div>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // BACKGROUND PARTICLES
+    // ==========================================
+    (function createParticles() {
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.width = p.style.height = (Math.random() * 3 + 1) + 'px';
+            p.style.animationDuration = (Math.random() * 8 + 6) + 's';
+            p.style.animationDelay = (Math.random() * 6) + 's';
+            container.appendChild(p);
+        }
+    })();
+
+    // ==========================================
+    // JUMP GAME (Dino-style)
+    // ==========================================
+    (function () {
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score-display');
+
+        // Responsive canvas
+        function resizeCanvas() {
+            const maxW = Math.min(window.innerWidth - 40, 400);
+            canvas.width = maxW;
+            canvas.height = Math.round(maxW * 0.44);
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const GROUND_Y = canvas.height - 30;
+        const GRAVITY = 0.6;
+        const JUMP_FORCE = -10;
+
+        let gameRunning = false;
+        let gameOver = false;
+        let score = 0;
+        let highScore = parseInt(localStorage.getItem('searcher_highscore') || '0');
+        let frameCount = 0;
+
+        // Player
+        const player = {
+            x: 40,
+            y: GROUND_Y,
+            w: 20,
+            h: 24,
+            vy: 0,
+            isJumping: false,
+            color: '#38bdf8',
+        };
+
+        // Obstacles
+        let obstacles = [];
+        let obstacleTimer = 0;
+        const OBSTACLE_INTERVAL_MIN = 70;
+        const OBSTACLE_INTERVAL_MAX = 140;
+        let nextObstacleAt = 90;
+        let speed = 3;
+
+        function reset() {
+            player.y = GROUND_Y;
+            player.vy = 0;
+            player.isJumping = false;
+            obstacles = [];
+            score = 0;
+            frameCount = 0;
+            obstacleTimer = 0;
+            nextObstacleAt = 90;
+            speed = 3;
+            gameOver = false;
+            gameRunning = true;
+        }
+
+        function jump() {
+            if (gameOver) {
+                reset();
+                return;
+            }
+            if (!gameRunning) {
+                reset();
+                return;
+            }
+            if (!player.isJumping) {
+                player.vy = JUMP_FORCE;
+                player.isJumping = true;
+            }
+        }
+
+        function spawnObstacle() {
+            const h = 16 + Math.random() * 20;
+            obstacles.push({
+                x: canvas.width + 10,
+                y: GROUND_Y - h + player.h,
+                w: 12 + Math.random() * 10,
+                h: h,
+                color: '#ef4444',
+            });
+        }
+
+        function update() {
+            if (!gameRunning || gameOver) return;
+
+            frameCount++;
+            score = Math.floor(frameCount / 5);
+
+            // Speed increases over time
+            speed = 3 + Math.floor(score / 50) * 0.5;
+
+            // Player physics
+            player.vy += GRAVITY;
+            player.y += player.vy;
+
+            if (player.y >= GROUND_Y) {
+                player.y = GROUND_Y;
+                player.vy = 0;
+                player.isJumping = false;
+            }
+
+            // Obstacles
+            obstacleTimer++;
+            if (obstacleTimer >= nextObstacleAt) {
+                spawnObstacle();
+                obstacleTimer = 0;
+                nextObstacleAt = OBSTACLE_INTERVAL_MIN + Math.random() * (OBSTACLE_INTERVAL_MAX - OBSTACLE_INTERVAL_MIN);
+            }
+
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                obstacles[i].x -= speed;
+
+                // Collision detection
+                if (
+                    player.x < obstacles[i].x + obstacles[i].w &&
+                    player.x + player.w > obstacles[i].x &&
+                    player.y < obstacles[i].y + obstacles[i].h &&
+                    player.y + player.h > obstacles[i].y
+                ) {
+                    gameOver = true;
+                    gameRunning = false;
+                    if (score > highScore) {
+                        highScore = score;
+                        localStorage.setItem('searcher_highscore', highScore.toString());
+                    }
+                }
+
+                // Remove off-screen
+                if (obstacles[i].x + obstacles[i].w < 0) {
+                    obstacles.splice(i, 1);
+                }
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Ground line
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, GROUND_Y + player.h);
+            ctx.lineTo(canvas.width, GROUND_Y + player.h);
+            ctx.stroke();
+
+            // Ground dashes
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1;
+            for (let i = (frameCount * speed) % 20; i < canvas.width; i += 20) {
+                ctx.beginPath();
+                ctx.moveTo(canvas.width - i, GROUND_Y + player.h + 6);
+                ctx.lineTo(canvas.width - i + 8, GROUND_Y + player.h + 6);
+                ctx.stroke();
+            }
+
+            // Player (rounded rect)
+            ctx.fillStyle = player.color;
+            roundRect(ctx, player.x, player.y, player.w, player.h, 4);
+
+            // Eye
+            ctx.fillStyle = '#0a0e1a';
+            ctx.fillRect(player.x + 12, player.y + 5, 4, 4);
+
+            // Obstacles
+            obstacles.forEach((o) => {
+                ctx.fillStyle = o.color;
+                roundRect(ctx, o.x, o.y, o.w, o.h, 3);
+            });
+
+            // Score
+            scoreDisplay.textContent = `Score: ${score} | High Score: ${highScore}`;
+
+            // Game over text
+            if (gameOver) {
+                ctx.fillStyle = 'rgba(10, 14, 26, 0.7)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#f1f5f9';
+                ctx.font = 'bold 18px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Game Over!', canvas.width / 2, canvas.height / 2 - 8);
+
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '13px Inter, sans-serif';
+                ctx.fillText('Tap to play again', canvas.width / 2, canvas.height / 2 + 16);
+            }
+
+            if (!gameRunning && !gameOver) {
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '14px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Tap to start', canvas.width / 2, canvas.height / 2);
+            }
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        // Input
+        canvas.addEventListener('click', jump);
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); jump(); }, { passive: false });
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.key === ' ') {
+                e.preventDefault();
+                jump();
+            }
+        });
+
+        loop();
+    })();
+</script>
+
+</body>
+</html>

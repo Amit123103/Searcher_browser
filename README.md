@@ -151,6 +151,56 @@ pyinstaller --noconsole --windowed --onefile --name "Searcher" --add-data "asset
 
 ---
 
+## 📱 Mobile Version (PWA)
+
+> **Searcher is now available on mobile!** The mobile version is a Progressive Web App (PWA) that works on any phone (Android & iOS).
+
+### How to Use on Mobile
+
+1. **Host the files** — Deploy the `mobile/` folder to a web server (see deployment below).
+2. **Open on your phone** — Navigate to the hosted URL in your phone's browser (Chrome, Safari, etc.).
+3. **Install to Home Screen** — Tap "Add to Home Screen" when prompted for a native app-like experience.
+
+### Mobile Features
+
+| Feature | Included |
+|---|---|
+| 🔍 Web Search (Google) | ✅ |
+| 📑 Tabbed Browsing | ✅ |
+| ⭐ Bookmarks (saved locally) | ✅ |
+| 📜 Browsing History | ✅ |
+| 🤖 AI Assistant Sidebar | ✅ |
+| 🌙 Dark / Light Theme | ✅ |
+| 📝 Scratchpad | ✅ |
+| 📴 Offline Page + Mini Game | ✅ |
+| 📲 Install to Home Screen | ✅ (PWA) |
+
+### Deploy to GitHub Pages (Free Hosting)
+
+```bash
+# 1. Make sure the mobile/ folder is committed
+git add mobile/
+git commit -m "Add mobile PWA version"
+git push
+
+# 2. Go to your GitHub repo → Settings → Pages
+# 3. Set Source to "Deploy from a branch" → main → / (root)
+# 4. Your mobile app will be live at:
+#    https://amit123103.github.io/Searcher_browser/mobile/
+```
+
+### Run Mobile Version Locally
+
+```bash
+# Use any simple HTTP server (Python example):
+cd mobile
+python -m http.server 8080
+
+# Then open http://localhost:8080 on your phone (same Wi-Fi network)
+```
+
+---
+
 ## 🔮 Future Improvements
 - Integrate a live LLM API (e.g., Google Gemini) into `ai_service.py`.
 - Integrate `SpeechRecognition` and `PyAudio` into `voice.py` for real microphone input.
