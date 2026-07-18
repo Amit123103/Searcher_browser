@@ -201,11 +201,8 @@ class NavigationBar(QToolBar):
             return
             
         if " " in url_text or "." not in url_text:
-            if hasattr(self.parent_window, 'perform_search'):
-                self.parent_window.perform_search(url_text)
-            else:
-                url = QUrl(f"https://www.google.com/search?q={url_text}")
-                browser.setUrl(url)
+            url = QUrl(f"https://www.google.com/search?q={url_text}")
+            browser.setUrl(url)
         else:
             if not url_text.startswith(('http://', 'https://', 'file://')):
                 url_text = "https://" + url_text

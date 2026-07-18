@@ -13,18 +13,7 @@ class SearcherPage(QWebEnginePage):
         self.parent_tabs = parent_tabs
         
     def acceptNavigationRequest(self, url, _type, isMainFrame):
-        if isMainFrame:
-            url_str = url.toString()
-            # Intercept Google Search queries and our custom local search scheme
-            if url_str.startswith("https://www.google.com/search?q=") or url_str.startswith("https://searcher.local/search?q="):
-                query = QUrlQuery(url).queryItemValue("q")
-                if query:
-                    # Delay the perform_search call so we return from here first
-                    from PyQt6.QtCore import QTimer
-                    main_window = self.parent_tabs.window()
-                    if hasattr(main_window, 'perform_search'):
-                        QTimer.singleShot(0, lambda: main_window.perform_search(query))
-                    return False
+        # Allow all navigation by default
         return super().acceptNavigationRequest(url, _type, isMainFrame)
 
 class BrowserTabWidget(QTabWidget):
