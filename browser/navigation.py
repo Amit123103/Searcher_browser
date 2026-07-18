@@ -37,14 +37,9 @@ class NavigationBar(QToolBar):
         self.reload_action.triggered.connect(self.navigate_reload)
         self.addAction(self.reload_action)
         
-        self.home_action = QAction(style.standardIcon(style.StandardPixmap.SP_DirHomeIcon), "Home", self)
-        self.home_action.setToolTip("Go to home")
-        self.home_action.triggered.connect(self.navigate_home)
-        self.addAction(self.home_action)
-        
         # 2. Address Bar (Expanding)
         self.url_bar = QLineEdit()
-        self.url_bar.setPlaceholderText("Search with Google or enter address")
+        self.url_bar.setPlaceholderText("Search or enter address")
         self.url_bar.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.url_bar.returnPressed.connect(self.navigate_to_url)
         
@@ -59,33 +54,22 @@ class NavigationBar(QToolBar):
         
         assets_dir = os.path.join(os.path.dirname(__file__), '..', 'assets')
         
-        # Voice Search Action
-        self.voice_action = QAction(QIcon(os.path.join(assets_dir, 'mic.svg')), "Voice", self)
-        self.voice_action.setToolTip("Voice Search")
-        self.voice_action.triggered.connect(self.trigger_voice_search)
-        self.addAction(self.voice_action)
-        
         # Spacer before tools
         spacer = QWidget()
         spacer.setFixedWidth(10)
         self.addWidget(spacer)
         
         # 3. Quick Tools
-        self.new_tab_action = QAction(QIcon(os.path.join(assets_dir, 'add.svg')), "New Tab", self)
-        self.new_tab_action.setToolTip("New Tab")
-        self.new_tab_action.triggered.connect(self.add_new_tab)
-        self.addAction(self.new_tab_action)
-        
-        self.bookmark_action = QAction(QIcon(os.path.join(assets_dir, 'star.svg')), "Bookmark", self)
-        self.bookmark_action.setToolTip("Bookmark current page")
-        self.bookmark_action.triggered.connect(self.bookmark_page)
-        self.addAction(self.bookmark_action)
-        
         self.ai_toggle_action = QAction(QIcon(os.path.join(assets_dir, 'ai.svg')), "AI Assistant", self)
         self.ai_toggle_action.setToolTip("Toggle AI Assistant")
         self.ai_toggle_action.setCheckable(True)
         self.ai_toggle_action.triggered.connect(self.toggle_ai_sidebar)
         self.addAction(self.ai_toggle_action)
+        
+        self.bookmark_action = QAction(QIcon(os.path.join(assets_dir, 'star.svg')), "Bookmark", self)
+        self.bookmark_action.setToolTip("Bookmark current page")
+        self.bookmark_action.triggered.connect(self.bookmark_page)
+        self.addAction(self.bookmark_action)
         
         # 4. Settings & More Menu
         menu_btn = QToolButton(self)
