@@ -71,7 +71,23 @@ class NavigationBar(QToolBar):
         self.bookmark_action.triggered.connect(self.bookmark_page)
         self.addAction(self.bookmark_action)
         
-        # 4. Settings & More Menu
+        # 4. Profile & Menu
+        self.profile_btn = QToolButton(self)
+        self.profile_btn.setText("P")
+        self.profile_btn.setToolTip("Profile")
+        self.profile_btn.setStyleSheet("""
+            QToolButton {
+                background-color: #87ceeb;
+                color: #0d1117;
+                border-radius: 12px;
+                font-weight: bold;
+                padding: 4px;
+                min-width: 16px;
+                min-height: 16px;
+            }
+        """)
+        self.addWidget(self.profile_btn)
+        
         menu_btn = QToolButton(self)
         menu_btn.setIcon(QIcon(os.path.join(assets_dir, 'menu.svg')))
         menu_btn.setToolTip("Customize and control")

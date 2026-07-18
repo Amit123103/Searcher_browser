@@ -5,11 +5,11 @@ Theme definitions for the Searcher Browser.
 def get_dark_theme():
     return """
     QMainWindow {
-        background-color: #0d1117;
+        background-color: #2b1b24;
     }
     QToolBar {
-        background-color: #161b22;
-        border-bottom: 1px solid #30363d;
+        background-color: #3b2333;
+        border: none;
         padding: 5px;
         spacing: 5px;
     }
@@ -24,37 +24,43 @@ def get_dark_theme():
         background: rgba(255, 255, 255, 0.1);
     }
     QLineEdit {
-        background-color: #0d1117;
+        background-color: #20141a;
         color: #ffffff;
         border-radius: 18px;
         padding: 8px 16px;
         font-size: 13px;
-        border: 1px solid #30363d;
+        border: 1px solid #3b2333;
         margin: 4px 10px;
     }
     QLineEdit:focus {
-        border: 1px solid #38bdf8;
+        border: 1px solid #6b4d5f;
     }
     QTabBar {
-        background-color: #0d1117;
+        background-color: #2b1b24;
     }
     QTabBar::tab {
         background-color: transparent;
-        color: #8b949e;
-        padding: 12px 24px;
+        color: #a997a3;
+        padding: 8px 16px;
         border: none;
         min-width: 120px;
+        max-width: 200px;
         font-size: 13px;
         font-weight: 500;
-        border-bottom: 2px solid transparent;
+        margin-top: 8px;
+        border-right: 1px solid #452c3b;
     }
     QTabBar::tab:selected {
+        background-color: #3b2333;
         color: #ffffff;
-        border-bottom: 2px solid #38bdf8;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        border-right: none;
     }
     QTabBar::tab:hover:!selected {
         background-color: rgba(255, 255, 255, 0.05);
-        border-radius: 6px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
     }
     QStatusBar {
         background-color: #0d1117;
