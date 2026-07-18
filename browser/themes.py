@@ -72,7 +72,7 @@ def get_dark_theme():
     QTabBar::tab {
         background-color: rgba(255, 255, 255, 0.05);
         color: #F8FAFC;
-        padding: 8px 16px;
+        padding: 8px 28px 8px 16px;
         border-radius: 12px;
         min-width: 100px;
         max-width: 200px;
@@ -91,13 +91,13 @@ def get_dark_theme():
     QTabBar::close-button {
         image: url(assets/icons/close_white.svg);
         subcontrol-position: right;
-        margin: 4px;
-        width: 12px;
-        height: 12px;
+        padding: 4px;
+        width: 14px;
+        height: 14px;
     }
     QTabBar::close-button:hover {
         background-color: rgba(255, 255, 255, 0.2);
-        border-radius: 6px;
+        border-radius: 7px;
     }
     QStatusBar {
         background-color: #0B1220;

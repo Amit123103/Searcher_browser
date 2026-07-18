@@ -40,6 +40,12 @@ class BrowserTabWidget(QTabWidget):
         super().__init__(parent)
         self.setDocumentMode(True) # Removes extra borders around the tab widget
         self.setTabsClosable(True)
+        # Ensure close button only appears on the right side
+        self.tabBar().setStyleSheet("""
+            QTabBar::close-button {
+                subcontrol-position: right;
+            }
+        """)
         self.tabCloseRequested.connect(self.close_tab)
         self.currentChanged.connect(self.on_current_tab_changed)
         
