@@ -78,9 +78,18 @@
 </head>
 <body>
     <div class="logo">Searcher</div>
-    <!-- Simple form that redirects to google search -->
-    <form class="search-container" action="https://www.google.com/search" method="get">
-        <input type="text" name="q" placeholder="Search the web..." autofocus autocomplete="off">
+    <script>
+        function doSearch(event) {
+            event.preventDefault();
+            const query = document.getElementById('search-input').value;
+            if (query.trim() !== '') {
+                // Navigate to a special URL that our Python code can intercept
+                window.location.href = 'https://searcher.local/search?q=' + encodeURIComponent(query);
+            }
+        }
+    </script>
+    <form class="search-container" onsubmit="doSearch(event)">
+        <input id="search-input" type="text" name="q" placeholder="Search the web..." autofocus autocomplete="off">
         <button type="submit">Search</button>
     </form>
     <div class="links">

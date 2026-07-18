@@ -15,6 +15,7 @@ from browser.downloads import DownloadManagerDialog
 from browser.themes import apply_theme
 from browser.passwords import PasswordManagerDialog
 from browser.adblocker import AdBlockerInterceptor
+from browser.search_engine import SearchEngineThread
 
 # AI Features
 from browser.ai_service import AIService
@@ -268,9 +269,35 @@ class MainWindow(QMainWindow):
         if dialog.exec():
             query = dialog.get_query()
             if query:
-                # Treat it as a search query
-                url = QUrl(f"https://www.google.com/search?q={query}")
-                self.tabs.add_new_tab(url)
+                self.perform_search(query)
+                
+    def perform_search(self, query):
+        """Perform a custom search using the built-in meta-search engine."""
+        browser = self.tabs.current_browser()
+        if not browser:
+            # If no browser, create a new tab first
+            browser = self.tabs.add_new_tab()
+            
+        # Show loading screen
+        loading_html = f"<html><body style='background:#202124;color:#e8eaed;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;'><h2>Searching for '{query}'...</h2></body></html>"
+        # Use a custom scheme to identify it's a searcher internal page
+        browser.setHtml(loading_html, QUrl(f"searcher://search?q={query}"))
+        self.nav_bar.url_bar.setText(query)
+        
+        # Start background thread
+        self.search_thread = SearchEngineThread(query, self)
+        
+        # We need to capture the 'browser' instance inside a closure or lambda
+        def on_results_ready(html_content):
+            browser.setHtml(html_content, QUrl(f"searcher://search?q={query}"))
+            
+        def on_error(error_msg):
+            err_html = f"<html><body style='background:#202124;color:#f28b82;padding:40px;font-family:sans-serif;'><h2>Search Failed</h2><p>{error_msg}</p></body></html>"
+            browser.setHtml(err_html, QUrl(f"searcher://search?q={query}"))
+            
+        self.search_thread.results_ready.connect(on_results_ready)
+        self.search_thread.error_occurred.connect(on_error)
+        self.search_thread.start()
                 
     def smart_organize_tabs(self):
         """Uses AI to group and organize open tabs."""

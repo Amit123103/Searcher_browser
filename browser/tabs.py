@@ -1,7 +1,31 @@
 from PyQt6.QtWidgets import QTabWidget, QMenu
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtGui import QAction
-from PyQt6.QtCore import QUrl, pyqtSignal, Qt
+from PyQt6.QtCore import QUrl, pyqtSignal, Qt, QUrlQuery
+from PyQt6.QtWebEngineCore import QWebEnginePage
+
+class SearcherPage(QWebEnginePage):
+    """Custom page to intercept navigation requests."""
+    
+    def __init__(self, parent_browser, parent_tabs):
+        super().__init__(parent_browser)
+        self.parent_browser = parent_browser
+        self.parent_tabs = parent_tabs
+        
+    def acceptNavigationRequest(self, url, _type, isMainFrame):
+        if isMainFrame:
+            url_str = url.toString()
+            # Intercept Google Search queries and our custom local search scheme
+            if url_str.startswith("https://www.google.com/search?q=") or url_str.startswith("https://searcher.local/search?q="):
+                query = QUrlQuery(url).queryItemValue("q")
+                if query:
+                    # Delay the perform_search call so we return from here first
+                    from PyQt6.QtCore import QTimer
+                    main_window = self.parent_tabs.window()
+                    if hasattr(main_window, 'perform_search'):
+                        QTimer.singleShot(0, lambda: main_window.perform_search(query))
+                    return False
+        return super().acceptNavigationRequest(url, _type, isMainFrame)
 
 class BrowserTabWidget(QTabWidget):
     """
@@ -32,10 +56,15 @@ class BrowserTabWidget(QTabWidget):
     def add_new_tab(self, qurl=None, label="New Tab"):
         """Adds a new tab containing a QWebEngineView."""
         if qurl is None:
-            # For now, default to Google until we implement a custom new tab page
-            qurl = QUrl("https://www.google.com")
+            import os
+            # Set default new tab to our local start page
+            start_page = QUrl.fromLocalFile(os.path.abspath("assets/start_page.html"))
+            qurl = start_page
             
         browser = QWebEngineView()
+        # Set custom page to intercept navigation
+        page = SearcherPage(browser, self)
+        browser.setPage(page)
         browser.setUrl(qurl)
         
         # Connect signals for this specific browser view
