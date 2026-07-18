@@ -8,7 +8,7 @@ from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEnginePage
 from browser.tabs import BrowserTabWidget
 from browser.navigation import NavigationBar
 from database.db_manager import DatabaseManager
-from browser.settings import SettingsManager, SettingsDialog
+from browser.settings import SettingsManager, SettingsTab
 from browser.history import HistoryDialog
 from browser.bookmarks import BookmarksDialog
 from browser.downloads import DownloadManagerDialog
@@ -297,9 +297,16 @@ class MainWindow(QMainWindow):
         dialog.exec()
         
     def show_settings(self):
-        dialog = SettingsDialog(self.settings_manager, self)
-        if dialog.exec():
-            self.apply_current_theme()
+        # Check if settings tab is already open
+        for i in range(self.tabs.count()):
+            if getattr(self.tabs.widget(i), 'is_settings_tab', False):
+                self.tabs.setCurrentIndex(i)
+                return
+                
+        settings_tab = SettingsTab(self.settings_manager, self)
+        settings_tab.is_settings_tab = True
+        index = self.tabs.addTab(settings_tab, "Settings")
+        self.tabs.setCurrentIndex(index)
             
     def bookmark_current_page(self):
         browser = self.tabs.current_browser()

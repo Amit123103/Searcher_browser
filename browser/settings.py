@@ -43,17 +43,16 @@ class SettingsManager:
         self.save_settings()
 
 
-class SettingsDialog(QDialog):
-    """Dialog UI for users to modify browser settings."""
+class SettingsTab(QWidget):
+    """Settings UI for users to modify browser settings."""
     
     def __init__(self, settings_manager, parent=None):
         super().__init__(parent)
         self.settings_manager = settings_manager
         self.setWindowTitle("Settings")
-        self.resize(1000, 750)
         
         self.setStyleSheet("""
-            QDialog {
+            QWidget {
                 background-color: #ffffff;
             }
             QWidget#Sidebar {

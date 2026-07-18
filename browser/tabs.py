@@ -81,12 +81,13 @@ class BrowserTabWidget(QTabWidget):
             
         # Save URL before closing
         browser = self.widget(i)
-        url = browser.url().toString()
-        if url and url != "about:blank":
-            self.closed_tabs.append(url)
-            # Keep only the last 10 closed tabs
-            if len(self.closed_tabs) > 10:
-                self.closed_tabs.pop(0)
+        if hasattr(browser, 'url'):
+            url = browser.url().toString()
+            if url and url != "about:blank":
+                self.closed_tabs.append(url)
+                # Keep only the last 10 closed tabs
+                if len(self.closed_tabs) > 10:
+                    self.closed_tabs.pop(0)
             
         # Delete the widget to free resources
         browser.deleteLater()
@@ -116,8 +117,10 @@ class BrowserTabWidget(QTabWidget):
     def on_current_tab_changed(self, i):
         browser = self.current_browser()
         if browser:
-            self.url_changed.emit(browser.url())
-            self.title_changed.emit(browser.title())
+            url = browser.url() if hasattr(browser, 'url') else QUrl("searcher://settings")
+            title = browser.title() if hasattr(browser, 'title') else "Settings"
+            self.url_changed.emit(url)
+            self.title_changed.emit(title)
             
     def on_url_changed(self, qurl, browser):
         # Only emit if the signal came from the currently active tab
