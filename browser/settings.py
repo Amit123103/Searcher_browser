@@ -313,31 +313,82 @@ class SettingsTab(QWidget):
         # ==========================================
         gen_lay = QVBoxLayout()
         from PyQt6.QtWidgets import QFrame
+        
+        # Profile Card
         user_card = QFrame()
         user_card.setProperty("class", "SettingsCard")
         user_layout = QVBoxLayout(user_card)
         user_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        user_layout.setSpacing(8)
+        user_layout.setContentsMargins(30, 30, 30, 30)
         
-        avatar = QLabel()
+        avatar = QLabel("👤")
         avatar.setFixedSize(80, 80)
-        avatar.setStyleSheet("background-color: #1e293b; border-radius: 40px; margin-top: 10px;")
+        avatar.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        avatar.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #38bdf8, stop:1 #818cf8); border-radius: 40px; font-size: 36px;")
         
         uname = QLabel("Alex Nova")
-        uname.setStyleSheet("font-size: 20px; font-weight: bold; color: #ffffff; margin-top: 12px;")
+        uname.setProperty("class", "CardTitle")
         uname.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         umail = QLabel("alex.nova@searcher.ai")
-        umail.setStyleSheet("font-size: 13px; color: #cbd5e1; margin-bottom: 20px;")
+        umail.setProperty("class", "InnerSub")
         umail.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        manage_btn = QPushButton("Manage Account")
-        manage_btn.setStyleSheet("background-color: #334155; color: #ffffff; border-radius: 14px; padding: 12px; border: none; font-weight: 500;")
         
         user_layout.addWidget(avatar, alignment=Qt.AlignmentFlag.AlignCenter)
         user_layout.addWidget(uname)
         user_layout.addWidget(umail)
-        user_layout.addWidget(manage_btn, alignment=Qt.AlignmentFlag.AlignCenter)
         gen_lay.addWidget(user_card)
+        
+        # General Settings Card
+        gen_card = QFrame()
+        gen_card.setProperty("class", "SettingsCard")
+        gen_card_layout = QVBoxLayout(gen_card)
+        
+        gen_title = QLabel("⚙️ General Settings")
+        gen_title.setProperty("class", "CardTitle")
+        gen_card_layout.addWidget(gen_title)
+        
+        # Startup option
+        startup_inner = QFrame()
+        startup_inner.setProperty("class", "InnerCard")
+        startup_lay = QHBoxLayout(startup_inner)
+        startup_labels = QVBoxLayout()
+        s_l1 = QLabel("Restore Previous Session")
+        s_l1.setProperty("class", "InnerTitle")
+        s_l2 = QLabel("Automatically reopen your last tabs when Searcher starts.")
+        s_l2.setProperty("class", "InnerSub")
+        startup_labels.addWidget(s_l1)
+        startup_labels.addWidget(s_l2)
+        startup_lay.addLayout(startup_labels)
+        
+        self.switch_restore = QPushButton()
+        self.switch_restore.setCursor(Qt.CursorShape.PointingHandCursor)
+        restore_val = self.settings_manager.get("restore_session", False)
+        self.switch_restore.clicked.connect(lambda: self.toggle_switch("restore"))
+        self.update_switch_ui("restore", restore_val)
+        startup_lay.addWidget(self.switch_restore)
+        gen_card_layout.addWidget(startup_inner)
+        
+        # Search engine option
+        search_inner = QFrame()
+        search_inner.setProperty("class", "InnerCard")
+        search_lay = QHBoxLayout(search_inner)
+        search_labels = QVBoxLayout()
+        se_l1 = QLabel("Default Search Engine")
+        se_l1.setProperty("class", "InnerTitle")
+        se_l2 = QLabel("Set Google as your default search engine.")
+        se_l2.setProperty("class", "InnerSub")
+        search_labels.addWidget(se_l1)
+        search_labels.addWidget(se_l2)
+        search_lay.addLayout(search_labels)
+        
+        search_badge = QLabel("Google")
+        search_badge.setStyleSheet("background-color: #38bdf8; color: #0f172a; border-radius: 10px; padding: 4px 14px; font-size: 12px; font-weight: bold;")
+        search_lay.addWidget(search_badge)
+        gen_card_layout.addWidget(search_inner)
+        
+        gen_lay.addWidget(gen_card)
 
         # ==========================================
         # 1. Appearance Page
@@ -548,8 +599,12 @@ class SettingsTab(QWidget):
         self.btn_poppins.setStyleSheet(active_font_style if font_name == "Poppins" else inactive_font_style)
             
     def toggle_switch(self, setting_key):
-        full_key = f"ai_{setting_key}"
-        current = self.settings_manager.get(full_key, setting_key == "insights")
+        if setting_key == "restore":
+            full_key = "restore_session"
+            current = self.settings_manager.get(full_key, False)
+        else:
+            full_key = f"ai_{setting_key}"
+            current = self.settings_manager.get(full_key, setting_key == "insights")
         new_val = not current
         self.settings_manager.set(full_key, new_val)
         self.update_switch_ui(setting_key, new_val)
@@ -574,7 +629,17 @@ class SettingsTab(QWidget):
             QMessageBox.information(self, "Workspace Created", f"Successfully created workspace: {name.strip()}")
         
     def update_switch_ui(self, key, is_on):
-        btn = self.switch_insights if key == "insights" else self.switch_prefetch
+        switch_map = {
+            "insights": self.switch_insights,
+            "prefetch": self.switch_prefetch,
+        }
+        if hasattr(self, "switch_restore"):
+            switch_map["restore"] = self.switch_restore
+        
+        btn = switch_map.get(key)
+        if not btn:
+            return
+            
         if is_on:
             btn.setText("On")
             btn.setStyleSheet("background-color: #0ea5e9; color: white; border-radius: 12px; padding: 4px 12px; border: none; font-weight: 500;")
