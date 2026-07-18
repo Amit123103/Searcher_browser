@@ -7,8 +7,8 @@ from PyQt6.QtWebEngineCore import QWebEnginePage
 class SearcherPage(QWebEnginePage):
     """Custom page to intercept navigation requests."""
     
-    def __init__(self, parent_browser, parent_tabs):
-        super().__init__(parent_browser)
+    def __init__(self, profile, parent_browser, parent_tabs):
+        super().__init__(profile, parent_browser)
         self.parent_browser = parent_browser
         self.parent_tabs = parent_tabs
         
@@ -107,8 +107,15 @@ class BrowserTabWidget(QTabWidget):
             qurl = start_page
             
         browser = QWebEngineView()
+        # Get the profile from the main window for consistent download/cookie handling
+        from PyQt6.QtWebEngineCore import QWebEngineProfile
+        profile = QWebEngineProfile.defaultProfile()
+        main_window = self.window()
+        if hasattr(main_window, 'profile'):
+            profile = main_window.profile
+        
         # Set custom page to intercept navigation
-        page = SearcherPage(browser, self)
+        page = SearcherPage(profile, browser, self)
         browser.setPage(page)
         browser.setUrl(qurl)
         
