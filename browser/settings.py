@@ -49,6 +49,7 @@ class SettingsTab(QWidget):
     def __init__(self, settings_manager, parent=None):
         super().__init__(parent)
         self.settings_manager = settings_manager
+        self.main_window = parent
         self.setWindowTitle("Settings")
         self.setObjectName("SettingsTab")
         
@@ -177,6 +178,7 @@ class SettingsTab(QWidget):
                 padding: 6px 16px;
                 font-size: 12px;
                 font-weight: 500;
+                border: none;
             }
             QPushButton.ToggleInactive {
                 background-color: transparent;
@@ -185,6 +187,7 @@ class SettingsTab(QWidget):
                 padding: 6px 16px;
                 font-size: 12px;
                 font-weight: 500;
+                border: none;
             }
             
             /* User Card */
@@ -500,8 +503,8 @@ class SettingsTab(QWidget):
         self.btn_dark.style().polish(self.btn_dark)
         
         # Apply theme to parent if available
-        if self.parent() and hasattr(self.parent(), "apply_current_theme"):
-            self.parent().apply_current_theme()
+        if self.main_window and hasattr(self.main_window, "apply_current_theme"):
+            self.main_window.apply_current_theme()
             
     def toggle_typography(self, font_name):
         self.settings_manager.set("typography", font_name)
