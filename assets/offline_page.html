@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You are offline - Searcher</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #202124;
+            color: #e8eaed;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 2rem;
+            z-index: 10;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #f28b82;
+        }
+        
+        p {
+            font-size: 1.1rem;
+            color: #9aa0a6;
+            margin-bottom: 2rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            background-color: #3c4043;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #f28b82;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+        
+        /* Mini Game Canvas */
+        #gameCanvas {
+            background-color: #1a1b1e;
+            border: 2px solid #3c4043;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .game-hint {
+            font-size: 0.9rem;
+            color: #8ab4f8;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>No Internet Connection</h1>
+        <p>You seem to be offline. Searcher is trying to automatically reconnect...</p>
+        
+        <div class="status-badge">
+            <span class="status-dot"></span> Waiting for connection
+        </div>
+        
+        <div>
+            <canvas id="gameCanvas" width="600" height="200"></canvas>
+            <div class="game-hint">Press Space or Click to jump!</div>
+        </div>
+    </div>
+
+    <script>
+        // --- Auto Reconnect Logic ---
+        
+        // We get the target URL from the query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetUrl = urlParams.get('url') || 'https://www.google.com';
+        
+        let isChecking = false;
+        
+        async function checkConnection() {
+            if (isChecking) return;
+            isChecking = true;
+            
+            try {
+                // Ping a reliable small endpoint to check connectivity
+                const response = await fetch('https://www.google.com/favicon.ico?' + new Date().getTime(), {
+                    mode: 'no-cors',
+                    cache: 'no-cache'
+                });
+                
+                // If the fetch succeeds (even opaque response), we have internet!
+                document.querySelector('.status-dot').style.backgroundColor = '#81c995';
+                document.querySelector('.status-badge').innerHTML = '<span class="status-dot" style="background-color: #81c995;"></span> Connection restored! Reloading...';
+                
+                // Wait 1 second then reload original page
+                setTimeout(() => {
+                    window.location.href = targetUrl;
+                }, 1000);
+            } catch (error) {
+                // Still offline
+            }
+            
+            isChecking = false;
+        }
+        
+        // Check every 3 seconds
+        setInterval(checkConnection, 3000);
+        
+        // Also check when the browser goes online natively
+        window.addEventListener('online', checkConnection);
+
+
+        // --- Mini Game Logic ---
+        
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Game state
+        let frames = 0;
+        let isPlaying = false;
+        let isGameOver = false;
+        let score = 0;
+        
+        // Character (The Searcher Block)
+        const player = {
+            x: 50,
+            y: 150,
+            width: 30,
+            height: 30,
+            velocity: 0,
+            gravity: 0.6,
+            jump: -10,
+            
+            draw() {
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                
+                // Draw eyes
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(this.x + 18, this.y + 5, 5, 5);
+                ctx.fillRect(this.x + 24, this.y + 5, 5, 5);
+            },
+            
+            update() {
+                this.velocity += this.gravity;
+                this.y += this.velocity;
+                
+                // Ground collision
+                if (this.y + this.height >= canvas.height - 20) {
+                    this.y = canvas.height - 20 - this.height;
+                    this.velocity = 0;
+                }
+            }
+        };
+        
+        // Obstacles
+        const obstacles = [];
+        
+        function drawGround() {
+            ctx.fillStyle = '#3c4043';
+            ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
+            
+            // Moving ground lines
+            ctx.strokeStyle = '#5f6368';
+            ctx.lineWidth = 2;
+            for(let i = 0; i < canvas.width; i+=40) {
+                let x = (i - (frames % 40));
+                ctx.beginPath();
+                ctx.moveTo(x, canvas.height - 15);
+                ctx.lineTo(x + 20, canvas.height - 15);
+                ctx.stroke();
+            }
+        }
+        
+        function handleObstacles() {
+            if (frames % 100 === 0) {
+                obstacles.push({
+                    x: canvas.width,
+                    y: canvas.height - 50,
+                    width: 20,
+                    height: 30
+                });
+            }
+            
+            for (let i = 0; i < obstacles.length; i++) {
+                let obs = obstacles[i];
+                obs.x -= 5;
+                
+                ctx.fillStyle = '#f28b82';
+                ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+                
+                // Collision Detection
+                if (
+                    player.x < obs.x + obs.width &&
+                    player.x + player.width > obs.x &&
+                    player.y < obs.y + obs.height &&
+                    player.y + player.height > obs.y
+                ) {
+                    isGameOver = true;
+                }
+                
+                // Remove off-screen obstacles and add score
+                if (obs.x + obs.width < 0) {
+                    obstacles.splice(i, 1);
+                    score++;
+                    i--;
+                }
+            }
+        }
+        
+        function drawScore() {
+            ctx.fillStyle = '#9aa0a6';
+            ctx.font = '20px monospace';
+            ctx.fillText(`Score: ${score}`, 20, 30);
+        }
+        
+        function resetGame() {
+            player.y = 150;
+            player.velocity = 0;
+            obstacles.length = 0;
+            score = 0;
+            frames = 0;
+            isGameOver = false;
+        }
+        
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            drawGround();
+            drawScore();
+            
+            if (isPlaying && !isGameOver) {
+                player.update();
+                handleObstacles();
+                frames++;
+            }
+            
+            player.draw();
+            
+            if (isGameOver) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#f28b82';
+                ctx.font = '30px sans-serif';
+                ctx.fillText('Game Over', 220, 90);
+                ctx.fillStyle = '#fff';
+                ctx.font = '16px sans-serif';
+                ctx.fillText('Press Space or Click to Restart', 180, 130);
+            } else if (!isPlaying) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#fff';
+                ctx.font = '24px sans-serif';
+                ctx.fillText('Click to Start', 220, 110);
+            }
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Input Handling
+        function doJump() {
+            if (isGameOver) {
+                resetGame();
+                isPlaying = true;
+            } else if (!isPlaying) {
+                isPlaying = true;
+            } else if (player.y >= canvas.height - 20 - player.height - 5) {
+                // Only jump if on ground
+                player.velocity = player.jump;
+            }
+        }
+        
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                doJump();
+            }
+        });
+        
+        canvas.addEventListener('mousedown', doJump);
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            doJump();
+        });
+        
+        // Start game loop
+        gameLoop();
+    </script>
+</body>
+</html>

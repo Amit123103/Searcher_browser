@@ -46,11 +46,15 @@ class MainWindow(QMainWindow):
         self.ai_service = AIService()
         
         # Profile Setup
+        from PyQt6.QtWebEngineCore import QWebEngineProfile
         if self.is_incognito:
             self.profile = QWebEngineProfile("incognito", self)
             self.profile.setPersistentCookiesPolicy(QWebEngineProfile.PersistentCookiesPolicy.NoPersistentCookies)
+            self.profile.setHttpCacheType(QWebEngineProfile.HttpCacheType.MemoryHttpCache)
         else:
             self.profile = QWebEngineProfile.defaultProfile()
+            self.profile.setHttpCacheType(QWebEngineProfile.HttpCacheType.DiskHttpCache)
+            self.profile.setHttpCacheMaximumSize(500 * 1024 * 1024) # 500 MB cache for better offline support
             
         # Ad Blocker
         self.ad_blocker = AdBlockerInterceptor(self)
@@ -237,15 +241,20 @@ class MainWindow(QMainWindow):
         
         if ok:
             self.status_bar.showMessage("Done", 2000)
-            if not self.is_incognito and not url_str.startswith("file://"):
+            if not self.is_incognito and not url_str.startswith("file://") and not url_str.startswith("searcher://"):
                 title = browser.title()
                 self.db_manager.add_history(url_str, title)
                 self.nav_bar.update_suggestions(self.db_manager.get_history(200))
         else:
-            self.status_bar.showMessage("Error loading page", 3000)
+            self.status_bar.showMessage("Network Error / Offline", 3000)
             if url_str.startswith("http"):
-                error_page_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "assets", "error_page.html")
-                browser.setUrl(QUrl.fromLocalFile(error_page_path))
+                offline_page_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "assets", "offline_page.html")
+                # We pass the failed URL so the offline page can try reconnecting to it
+                import urllib.parse
+                safe_url = urllib.parse.quote(url_str, safe='')
+                offline_url = QUrl.fromLocalFile(offline_page_path)
+                offline_url.setQuery(f"url={safe_url}")
+                browser.setUrl(offline_url)
                 
     # --- Feature Dialogs and Actions ---
             
