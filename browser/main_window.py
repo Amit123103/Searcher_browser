@@ -61,7 +61,6 @@ class MainWindow(QMainWindow):
         self.profile.downloadRequested.connect(self.download_manager.handle_download_requested)
         
         self.setup_ui()
-        self.setup_menus()
         self.setup_shortcuts()
         self.apply_current_theme()
         
@@ -101,9 +100,62 @@ class MainWindow(QMainWindow):
         # Initialize Navigation Bar
         self.nav_bar = NavigationBar(self)
         
-        # Add Tabs first, then Toolbar (Custom layout order to match mockups)
-        self.layout.addWidget(self.tabs.tabBar())  # Extract just the tab bar
-        self.layout.addWidget(self.nav_bar)        # Put toolbar below tab bar
+        # Top Row for Tabs and Buttons
+        from PyQt6.QtWidgets import QToolButton, QPushButton, QHBoxLayout
+        from PyQt6.QtGui import QIcon
+        
+        top_row_widget = QWidget()
+        top_row_layout = QHBoxLayout(top_row_widget)
+        top_row_layout.setContentsMargins(0, 0, 10, 0)
+        top_row_layout.setSpacing(10)
+        top_row_layout.addWidget(self.tabs.tabBar())
+        
+        # Add New Tab button (+)
+        self.new_tab_btn = QToolButton(self)
+        self.new_tab_btn.setText("+")
+        self.new_tab_btn.setToolTip("Open a new tab")
+        self.new_tab_btn.setStyleSheet("""
+            QToolButton {
+                background: transparent;
+                border: none;
+                color: #e2e8f0;
+                font-size: 20px;
+                font-weight: 400;
+                padding: 0px 8px;
+            }
+            QToolButton:hover {
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 6px;
+            }
+        """)
+        self.new_tab_btn.clicked.connect(lambda: self.tabs.add_new_tab())
+        
+        # Ask Gemini button
+        self.ask_ai_btn = QPushButton("Ask Gemini", self)
+        assets_dir = os.path.join(os.path.dirname(__file__), '..', 'assets')
+        self.ask_ai_btn.setIcon(QIcon(os.path.join(assets_dir, 'ai.svg')))
+        self.ask_ai_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #4a3443;
+                color: #ffffff;
+                border-radius: 14px;
+                padding: 4px 12px;
+                font-size: 13px;
+                font-weight: 500;
+                border: 1px solid #5a4453;
+            }
+            QPushButton:hover {
+                background-color: #5a4453;
+            }
+        """)
+        
+        top_row_layout.addWidget(self.new_tab_btn)
+        top_row_layout.addWidget(self.ask_ai_btn)
+        top_row_layout.addStretch()
+        
+        # Add Tabs top row first, then Toolbar (Custom layout order to match mockups)
+        self.layout.addWidget(top_row_widget)
+        self.layout.addWidget(self.nav_bar)
         
         # We need to add the stacked widget of the QTabWidget
         # But QTabWidget doesn't expose it directly.

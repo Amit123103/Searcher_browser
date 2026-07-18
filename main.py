@@ -29,7 +29,7 @@ def main():
     # In Phase 1 we don't have a logo yet, but this is where it would be loaded:
     # window.setWindowIcon(QIcon("assets/logo/logo.png"))
     
-    window.show()
+    window.showMaximized()
     
     # Start the event loop
     sys.exit(app.exec())

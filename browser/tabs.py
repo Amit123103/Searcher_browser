@@ -53,60 +53,6 @@ class BrowserTabWidget(QTabWidget):
         # Track recently closed tabs for restoration
         self.closed_tabs = []
         
-        # Corner Container
-        from PyQt6.QtWidgets import QWidget, QHBoxLayout, QPushButton
-        from PyQt6.QtGui import QIcon
-        import os
-        
-        corner_container = QWidget(self)
-        corner_layout = QHBoxLayout(corner_container)
-        corner_layout.setContentsMargins(5, 5, 10, 5)
-        corner_layout.setSpacing(10)
-        
-        # Add New Tab button (+)
-        self.new_tab_btn = QToolButton(self)
-        self.new_tab_btn.setText("+")
-        self.new_tab_btn.setToolTip("Open a new tab")
-        self.new_tab_btn.setStyleSheet("""
-            QToolButton {
-                background: transparent;
-                border: none;
-                color: #e2e8f0;
-                font-size: 20px;
-                font-weight: 400;
-                padding: 0px 8px;
-            }
-            QToolButton:hover {
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 6px;
-            }
-        """)
-        self.new_tab_btn.clicked.connect(lambda: self.add_new_tab())
-        
-        # Ask Gemini button
-        self.ask_ai_btn = QPushButton("Ask Gemini", self)
-        assets_dir = os.path.join(os.path.dirname(__file__), '..', 'assets')
-        self.ask_ai_btn.setIcon(QIcon(os.path.join(assets_dir, 'ai.svg'))) # using ai.svg for now
-        self.ask_ai_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #4a3443;
-                color: #ffffff;
-                border-radius: 14px;
-                padding: 4px 12px;
-                font-size: 13px;
-                font-weight: 500;
-                border: 1px solid #5a4453;
-            }
-            QPushButton:hover {
-                background-color: #5a4453;
-            }
-        """)
-        
-        corner_layout.addWidget(self.new_tab_btn)
-        corner_layout.addWidget(self.ask_ai_btn)
-        
-        self.setCornerWidget(corner_container, Qt.Corner.TopRightCorner)
-        
     def add_new_tab(self, qurl=None, label="New Tab"):
         """Adds a new tab containing a QWebEngineView."""
         if qurl is None:
