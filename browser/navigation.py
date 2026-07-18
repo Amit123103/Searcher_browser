@@ -1,3 +1,4 @@
+import os
 from PyQt6.QtWidgets import (QToolBar, QLineEdit, QCompleter, QWidget, 
                              QSizePolicy, QToolButton, QMenu)
 from PyQt6.QtGui import QAction, QStandardItemModel, QStandardItem, QIcon
@@ -89,8 +90,10 @@ class NavigationBar(QToolBar):
         
         self.addWidget(self.url_bar)
         
+        assets_dir = os.path.join(os.path.dirname(__file__), '..', 'assets')
+        
         # Voice Search Action
-        self.voice_action = QAction("🎤", self)
+        self.voice_action = QAction(QIcon(os.path.join(assets_dir, 'mic.svg')), "Voice", self)
         self.voice_action.setToolTip("Voice Search")
         self.voice_action.triggered.connect(self.trigger_voice_search)
         self.addAction(self.voice_action)
@@ -101,17 +104,17 @@ class NavigationBar(QToolBar):
         self.addWidget(spacer)
         
         # 3. Quick Tools
-        self.new_tab_action = QAction("➕", self)
+        self.new_tab_action = QAction(QIcon(os.path.join(assets_dir, 'add.svg')), "New Tab", self)
         self.new_tab_action.setToolTip("New Tab")
         self.new_tab_action.triggered.connect(self.add_new_tab)
         self.addAction(self.new_tab_action)
         
-        self.bookmark_action = QAction("⭐", self)
+        self.bookmark_action = QAction(QIcon(os.path.join(assets_dir, 'star.svg')), "Bookmark", self)
         self.bookmark_action.setToolTip("Bookmark current page")
         self.bookmark_action.triggered.connect(self.bookmark_page)
         self.addAction(self.bookmark_action)
         
-        self.ai_toggle_action = QAction("🤖 AI", self)
+        self.ai_toggle_action = QAction(QIcon(os.path.join(assets_dir, 'ai.svg')), "AI Assistant", self)
         self.ai_toggle_action.setToolTip("Toggle AI Assistant")
         self.ai_toggle_action.setCheckable(True)
         self.ai_toggle_action.triggered.connect(self.toggle_ai_sidebar)
@@ -119,7 +122,7 @@ class NavigationBar(QToolBar):
         
         # 4. Settings & More Menu
         menu_btn = QToolButton(self)
-        menu_btn.setText(" ☰ ")
+        menu_btn.setIcon(QIcon(os.path.join(assets_dir, 'menu.svg')))
         menu_btn.setToolTip("Customize and control")
         menu_btn.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         
