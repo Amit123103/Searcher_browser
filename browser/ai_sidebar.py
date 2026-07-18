@@ -20,8 +20,6 @@ class AISidebar(QDockWidget):
         # We override the title bar to make it match the design if needed, but QSS handles most
         self.setStyleSheet("""
             QDockWidget {
-                titlebar-close-icon: url(assets/close.svg);
-                titlebar-normal-icon: url(assets/float.svg);
                 font-weight: 600;
             }
             QDockWidget::title {

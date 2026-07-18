@@ -91,56 +91,53 @@ class SearchEngineThread(QThread):
             <style>
                 body {{
                     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    background-color: #202124;
+                    background-color: #222222;
                     color: #e8eaed;
                     margin: 0;
                     padding: 0;
                 }}
                 .header {{
                     padding: 20px 40px;
-                    border-bottom: 1px solid #3c4043;
                     display: flex;
                     align-items: center;
                 }}
                 .logo {{
                     font-size: 24px;
                     font-weight: bold;
-                    background: linear-gradient(45deg, #8ab4f8, #c58af9);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
+                    color: #a78bfa;
                     margin-right: 30px;
                 }}
                 .search-bar {{
-                    background: #303134;
-                    border: 1px solid #5f6368;
-                    border-radius: 24px;
-                    padding: 10px 20px;
+                    background: #2a2a2a;
+                    border: 1px solid #444;
+                    border-radius: 15px;
+                    padding: 8px 16px;
                     color: #fff;
                     width: 500px;
-                    font-size: 16px;
+                    font-size: 14px;
                 }}
                 .container {{
                     max-width: 700px;
-                    margin: 30px 40px;
+                    margin: 20px 40px;
                 }}
                 .result {{
-                    margin-bottom: 30px;
+                    margin-bottom: 25px;
                 }}
                 .result-title {{
-                    font-size: 20px;
-                    color: #8ab4f8;
+                    font-size: 18px;
+                    color: #60a5fa;
                     text-decoration: none;
                 }}
                 .result-title:hover {{
                     text-decoration: underline;
                 }}
                 .result-url {{
-                    color: #bdc1c6;
-                    font-size: 14px;
+                    color: #9ca3af;
+                    font-size: 13px;
                     margin-bottom: 5px;
                 }}
                 .result-snippet {{
-                    color: #9aa0a6;
+                    color: #9ca3af;
                     font-size: 14px;
                     line-height: 1.5;
                 }}
