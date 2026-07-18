@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QTabWidget, QMenu
+from PyQt6.QtWidgets import QTabWidget, QMenu, QToolButton
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtGui import QAction
 from PyQt6.QtCore import QUrl, pyqtSignal, Qt, QUrlQuery
@@ -52,6 +52,30 @@ class BrowserTabWidget(QTabWidget):
         
         # Track recently closed tabs for restoration
         self.closed_tabs = []
+        
+        # Add New Tab button (+)
+        self.new_tab_btn = QToolButton(self)
+        self.new_tab_btn.setText("+")
+        self.new_tab_btn.setToolTip("Open a new tab")
+        self.new_tab_btn.setStyleSheet("""
+            QToolButton {
+                background: transparent;
+                border: none;
+                color: #8b949e;
+                font-size: 20px;
+                font-weight: 500;
+                padding: 0px 8px;
+                margin-top: 5px;
+                margin-right: 5px;
+            }
+            QToolButton:hover {
+                color: #ffffff;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 6px;
+            }
+        """)
+        self.new_tab_btn.clicked.connect(lambda: self.add_new_tab())
+        self.setCornerWidget(self.new_tab_btn, Qt.Corner.TopRightCorner)
         
     def add_new_tab(self, qurl=None, label="New Tab"):
         """Adds a new tab containing a QWebEngineView."""
