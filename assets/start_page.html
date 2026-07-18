@@ -32,36 +32,6 @@
             margin-bottom: 40px;
         }
 
-        .logo-circle {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #38bdf8, #0369a1);
-            box-shadow: 
-                inset -10px -10px 20px rgba(0,0,0,0.5),
-                inset 10px 10px 20px rgba(255,255,255,0.4),
-                0 0 30px rgba(56, 189, 248, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            margin-bottom: 12px;
-            border: 2px solid #0f172a;
-            outline: 2px solid #1e293b;
-            outline-offset: 4px;
-        }
-
-        .logo-circle::after {
-            content: '';
-            position: absolute;
-            bottom: 5px;
-            right: -10px;
-            width: 30px;
-            height: 12px;
-            background: linear-gradient(135deg, #cbd5e1, #64748b);
-            border-radius: 6px;
-            transform: rotate(45deg);
-            box-shadow: inset 1px 1px 3px rgba(255,255,255,0.5);
         }
 
         .logo-s {
@@ -410,32 +380,7 @@
 <body>
 
     <div class="logo-container">
-        <!-- SVG for the glowing S magnifying glass -->
-        <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <linearGradient id="glassGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="rgba(138, 180, 248, 0.4)" />
-                    <stop offset="100%" stop-color="rgba(255, 255, 255, 0.05)" />
-                </linearGradient>
-                <linearGradient id="sGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#8ab4f8" />
-                    <stop offset="100%" stop-color="#38bdf8" />
-                </linearGradient>
-                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="3" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-            </defs>
-            
-            <!-- Magnifying Glass Rim -->
-            <circle cx="45" cy="45" r="35" fill="url(#glassGrad)" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
-            <circle cx="45" cy="45" r="28" fill="rgba(0,0,0,0.3)" stroke="rgba(56,189,248,0.3)" stroke-width="4"/>
-            <!-- Handle -->
-            <rect x="65" y="65" width="25" height="12" rx="6" transform="rotate(45 65 65)" fill="url(#glassGrad)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-            <!-- The 'S' -->
-            <path d="M 52 35 C 45 32, 38 35, 38 41 C 38 46, 45 47, 48 49 C 52 51, 53 56, 49 60 C 44 63, 37 60, 35 56" 
-                  fill="none" stroke="url(#sGrad)" stroke-width="6" stroke-linecap="round" filter="url(#glow)"/>
-        </svg>
+        <img class="logo" src="logo.png" alt="Searcher Logo">
         <div class="logo-text">Searcher</div>
     </div>
 

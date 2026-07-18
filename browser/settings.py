@@ -224,8 +224,24 @@ class SettingsDialog(QDialog):
         sidebar_layout = QVBoxLayout(sidebar)
         sidebar_layout.setContentsMargins(0, 0, 0, 0)
         
-        logo_label = QLabel("S Searcher")
-        logo_label.setObjectName("SidebarLogo")
+        logo_container = QWidget()
+        logo_lay = QHBoxLayout(logo_container)
+        logo_lay.setContentsMargins(20, 20, 20, 0)
+        logo_lay.setSpacing(10)
+        
+        logo_img = QLabel()
+        from PyQt6.QtGui import QPixmap
+        import os
+        icon_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "assets", "logo.png")
+        pixmap = QPixmap(icon_path).scaled(32, 32, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        logo_img.setPixmap(pixmap)
+        
+        logo_label = QLabel("Searcher")
+        logo_label.setStyleSheet("color: #ffffff; font-size: 18px; font-weight: bold;")
+        
+        logo_lay.addWidget(logo_img)
+        logo_lay.addWidget(logo_label)
+        logo_lay.addStretch()
         logo_sub = QLabel("AI-First Browsing")
         logo_sub.setObjectName("SidebarLogoSub")
         
@@ -245,7 +261,7 @@ class SettingsDialog(QDialog):
             self.nav_list.addItem(item)
         self.nav_list.setCurrentRow(1)
         
-        sidebar_layout.addWidget(logo_label)
+        sidebar_layout.addWidget(logo_container)
         sidebar_layout.addWidget(logo_sub)
         sidebar_layout.addWidget(new_ws_btn)
         sidebar_layout.addWidget(category_lbl)

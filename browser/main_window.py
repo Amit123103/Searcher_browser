@@ -2,7 +2,7 @@ import os
 from PyQt6.QtWidgets import (QMainWindow, QVBoxLayout, QWidget, QStatusBar, QProgressBar, 
                              QMessageBox, QApplication, QMenu, QDockWidget)
 from PyQt6.QtCore import Qt, QUrl
-from PyQt6.QtGui import QKeySequence, QShortcut, QAction
+from PyQt6.QtGui import QKeySequence, QShortcut, QAction, QIcon
 from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEnginePage
 
 from browser.tabs import BrowserTabWidget
@@ -33,6 +33,11 @@ class MainWindow(QMainWindow):
         self.is_incognito = is_incognito
         title_suffix = " (Incognito)" if is_incognito else ""
         self.setWindowTitle(f"Searcher{title_suffix}")
+        
+        # Set Window Icon
+        icon_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "assets", "logo.png")
+        self.setWindowIcon(QIcon(icon_path))
+        
         self.resize(1200, 800)
         
         # Initialize Managers
