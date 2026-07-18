@@ -391,9 +391,13 @@ class MainWindow(QMainWindow):
             saved_session = []
             for i in range(self.tabs.count()):
                 browser = self.tabs.widget(i)
-                url_str = browser.url().toString()
-                if url_str and not url_str.startswith("file://") and url_str != "about:blank":
-                    saved_session.append(url_str)
+                if hasattr(browser, 'url'):
+                    try:
+                        url_str = browser.url().toString()
+                        if url_str and not url_str.startswith("file://") and url_str != "about:blank":
+                            saved_session.append(url_str)
+                    except Exception:
+                        pass
             self.settings_manager.set("saved_session", saved_session)
             
         super().closeEvent(event)
