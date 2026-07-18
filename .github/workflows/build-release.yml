@@ -1,0 +1,202 @@
+name: Build Multi-Platform Releases
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags like v1.0.0
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    name: Build Windows (EXE)
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+      
+      - name: Build Windows executable
+        run: |
+          pyinstaller Searcher.spec
+      
+      - name: Create installer (NSIS)
+        uses: joncloud/makensis-action@v3.7
+        with:
+          script-file: "installer.nsi"
+      
+      - name: Upload executable artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Searcher-Windows-exe
+          path: dist/Searcher.exe
+      
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Searcher-Windows-installer
+          path: SearcherBrowserInstaller.exe
+
+  build-macos:
+    runs-on: macos-latest
+    name: Build macOS (DMG)
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+      
+      - name: Build macOS app
+        run: |
+          pyinstaller --name Searcher \
+            --onedir \
+            --windowed \
+            --icon assets/logo/logo.icns \
+            --add-data assets:assets \
+            main.py
+      
+      - name: Create DMG
+        run: |
+          brew install create-dmg
+          create-dmg \
+            --volname "Searcher" \
+            --window-pos 200 120 \
+            --window-size 600 300 \
+            --icon-size 100 \
+            --icon "Searcher.app" 175 120 \
+            --hide-extension "Searcher.app" \
+            --app-drop-link 425 120 \
+            "Searcher.dmg" \
+            "dist/"
+      
+      - name: Upload macOS app artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Searcher-macOS-app
+          path: dist/Searcher.app
+      
+      - name: Upload macOS DMG artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Searcher-macOS-dmg
+          path: Searcher.dmg
+
+  build-linux:
+    runs-on: ubuntu-latest
+    name: Build Linux (AppImage)
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libqt6gui6 \
+            libqt6core6 \
+            libgl1-mesa-glx \
+            libxkbcommon-x11-0
+      
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+      
+      - name: Build Linux executable
+        run: |
+          pyinstaller --name Searcher \
+            --onedir \
+            --add-data assets:assets \
+            main.py
+      
+      - name: Create AppImage
+        run: |
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          chmod +x linuxdeploy-x86_64.AppImage
+          ./linuxdeploy-x86_64.AppImage --appdir dist/Searcher --output appimage
+      
+      - name: Upload Linux AppImage artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Searcher-Linux-AppImage
+          path: "Searcher-*.AppImage"
+      
+      - name: Upload Linux executable artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Searcher-Linux-exe
+          path: dist/Searcher
+
+  create-release:
+    needs: [build-windows, build-macos, build-linux]
+    runs-on: ubuntu-latest
+    name: Create GitHub Release
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            Searcher-Windows-exe/Searcher.exe
+            Searcher-Windows-installer/SearcherBrowserInstaller.exe
+            Searcher-macOS-dmg/Searcher.dmg
+            Searcher-Linux-AppImage/Searcher-*.AppImage
+          draft: false
+          prerelease: false
+          body: |
+            # Searcher Browser v${{ github.ref_name }}
+            
+            Download your platform's version:
+            - **Windows**: Use `SearcherBrowserInstaller.exe` (recommended) or `Searcher.exe`
+            - **macOS**: Use `Searcher.dmg` (drag & drop to Applications)
+            - **Linux**: Use `Searcher.AppImage` (make executable and run)
+            
+            ## Installation Instructions
+            
+            ### Windows
+            1. Download `SearcherBrowserInstaller.exe`
+            2. Double-click to run installer
+            3. Click "Install"
+            4. Searcher Browser will open automatically
+            
+            ### macOS
+            1. Download `Searcher.dmg`
+            2. Double-click to mount
+            3. Drag Searcher app to Applications folder
+            4. Open Applications and double-click Searcher
+            
+            ### Linux
+            1. Download `Searcher.AppImage`
+            2. Right-click → Properties → Permissions → Make executable
+            3. Double-click to run, or: `./Searcher.AppImage`
+            
+            Enjoy your Searcher Browser! 🚀
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -28,26 +28,57 @@ Whether you want a secondary browser for privacy, a developer tool for testing, 
 
 ## 📥 Download Searcher Browser
 
-> **No installation required!** Just download and double-click to run.
+> **Cross-platform support!** Choose your operating system below.
 
-### 🔗 [Download Searcher Browser (Windows)](https://github.com/Amit123103/Searcher_browser/releases/tag/latest1)
+### 🪟 Windows
+- **Option 1 (Recommended):** Download `SearcherBrowserInstaller.exe` → Double-click → Follow installer
+- **Option 2 (Portable):** Download `Searcher.exe` → Double-click and run directly (no installation)
 
-Click the link above to go to the releases page and download the latest `.exe` file.
+### 🍎 macOS  
+- Download `Searcher.dmg` → Double-click to mount → Drag "Searcher" app to Applications → Launch!
+
+### 🐧 Linux
+- Download `Searcher.AppImage` → Right-click → Properties → Permissions → Check "Execute" → Double-click to run
+- Or: `chmod +x Searcher.AppImage && ./Searcher.AppImage`
+
+### 🔗 [⬇️ Download Latest Release](https://github.com/Amit123103/Searcher_browser/releases)
+
+Visit the releases page above to download your platform's version!
 
 ---
 
-## 🚀 How to Use the Browser
+## 🚀 How to Install & Use Searcher Browser
 
-1. **Download** — Click the download link above and download the `Searcher.exe` file from the releases page.
-2. **Run** — Double-click the downloaded `Searcher.exe` file. No installation, no zip extraction, no Python or dependencies required.
-3. **Browse** — The browser opens with a custom start page. Use the address bar at the top to search the web or type any URL.
-4. **Open New Tabs** — Click the `+` button next to the tabs to open a new tab, just like any modern browser.
-5. **Use AI Assistant** — Click the AI icon in the toolbar to open the AI sidebar. You can summarize pages, ask questions, and generate notes.
-6. **Manage Bookmarks** — Click the star icon to bookmark any page. Access all your bookmarks from the menu.
-7. **Incognito Mode** — Open a new incognito window from the menu to browse privately without saving history or cookies.
-8. **Switch Themes** — Go to Settings to switch between Dark Mode and Light Mode.
-9. **Voice Search** — Click the microphone icon to use voice search (simulated).
-10. **Download Files** — All downloads are tracked in the built-in Download Manager.
+### Installation by Platform
+
+**Windows:**
+1. Download `SearcherBrowserInstaller.exe` from releases
+2. Double-click the installer and follow the wizard
+3. Searcher will be added to your Start Menu and Desktop
+4. Done! Launch from Start Menu or Desktop shortcut
+
+**macOS:**
+1. Download `Searcher.dmg` from releases
+2. Double-click the `.dmg` file to mount it
+3. Drag the "Searcher" app into your Applications folder
+4. Open Applications folder and double-click "Searcher"
+5. On first launch, you may need to approve it (System Preferences)
+
+**Linux:**
+1. Download `Searcher.AppImage` from releases
+2. Make it executable: `chmod +x Searcher.AppImage`
+3. Double-click to launch, or run: `./Searcher.AppImage`
+4. Create a desktop launcher in your application menu (desktop-specific)
+
+### Using the Browser
+
+1. **Browse** — Use the address bar at the top to navigate to any website or search the web
+2. **New Tabs** — Click the `+` button next to tabs to open new tabs
+3. **AI Assistant** — Click the AI icon to open the sidebar for page summaries, Q&A, and notes
+4. **Bookmarks** — Click the star icon to save favorite pages
+5. **Search Settings** — Go to Settings to configure search engines and themes
+6. **Incognito Mode** — Use the menu to open private browsing windows
+7. **Download Manager** — Track your downloads in the Downloads panel
 
 ---
 
