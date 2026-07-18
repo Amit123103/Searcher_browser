@@ -8,15 +8,14 @@
 
 Want to try Searcher Browser immediately? You can download the pre-compiled, portable executable for Windows right now.
 
-**📥 [Download Searcher Browser for Windows](https://github.com/Amit123103/Searcher_browser/releases/latest/download/Searcher.zip)**
+**📥 [Download Searcher Browser for Windows (Direct EXE)](https://github.com/Amit123103/Searcher_browser/releases/latest/download/Searcher.exe)**
 
 **How to use:**
-1. Download the `Searcher.zip` file from the link above.
-2. Extract the ZIP file to any location on your computer.
-3. Open the extracted folder and double-click `Searcher.exe`.
-4. **Enjoy browsing!** No installation, Python, or dependencies required.
+1. Download the `Searcher.exe` file from the link above.
+2. Double-click the downloaded `Searcher.exe` file.
+3. **Enjoy browsing!** No installation, no zip extraction, Python, or dependencies required.
 
-*(Note: If the link above says "Not Found", please ensure you have published a Release on GitHub and uploaded the `Searcher.zip` file to it.)*
+*(Note: If the link above says "Not Found", please ensure you have published a Release on GitHub and uploaded the `Searcher.exe` file to it.)*
 
 ---
 
@@ -75,22 +74,21 @@ Ensure you have Python 3.12 or newer installed on your Windows machine.
 
 ## 📦 How to Deploy (Create a Standalone Executable)
 
-To distribute the Searcher browser so others can run it without installing Python, you can package it into a standalone `.exe` file using **PyInstaller**.
+To distribute the Searcher browser so others can run it without installing Python, you can package it into a single standalone `.exe` file using **PyInstaller**.
 
 1. **Install PyInstaller**:
    ```bash
    pip install pyinstaller
    ```
 2. **Build the Executable**:
-   Run the following command from the root of your project directory to build a windowed (no console) standalone application.
+   Run the following command from the root of your project directory to build a windowed (no console) single-file standalone application.
    ```bash
-   pyinstaller --noconsole --windowed --name "Searcher" --add-data "assets;assets" main.py
+   pyinstaller --noconsole --windowed --onefile --name "Searcher" --add-data "assets;assets" main.py
    ```
 3. **Share Your Browser**:
    - Navigate to the newly created `dist` folder in your project directory.
-   - Inside `dist/Searcher/`, you will find `Searcher.exe`.
-   - Zip the entire `Searcher` folder.
-   - Upload this zip file to your GitHub Releases or any cloud storage, and share the link with others!
+   - Inside the `dist/` folder, you will find the single `Searcher.exe` file.
+   - Upload this exact `Searcher.exe` file to your GitHub Releases or any cloud storage, and share the link with others!
 
 ---
 
