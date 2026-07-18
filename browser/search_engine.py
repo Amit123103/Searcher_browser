@@ -80,9 +80,54 @@ class SearchEngineThread(QThread):
             self.results_ready.emit(generated_html)
             
         except Exception as e:
-            self.error_occurred.emit(str(e))
+            # Fallback to offline search using local history and bookmarks
+            results = self.perform_offline_search()
+            if results is not None:
+                generated_html = self.generate_searcher_html(self.query, results, is_offline=True)
+                self.results_ready.emit(generated_html)
+            else:
+                self.error_occurred.emit(str(e))
+                
+    def perform_offline_search(self):
+        try:
+            parent = self.parent()
+            if not parent or not hasattr(parent, 'db_manager'):
+                return None
             
-    def generate_searcher_html(self, query, results):
+            db_manager = parent.db_manager
+            history = db_manager.get_history(limit=1000)
+            bookmarks = db_manager.get_bookmarks()
+            
+            results = []
+            q_lower = self.query.lower()
+            
+            # Search Bookmarks first (higher priority)
+            for url, title, _ in bookmarks:
+                if q_lower in url.lower() or (title and q_lower in title.lower()):
+                    results.append({
+                        'title': title or url,
+                        'url': url,
+                        'snippet': 'Result found in your Bookmarks (Offline Mode).'
+                    })
+                    
+            # Search History
+            for url, title, _ in history:
+                # Avoid duplicates
+                if any(r['url'] == url for r in results):
+                    continue
+                if q_lower in url.lower() or (title and q_lower in title.lower()):
+                    results.append({
+                        'title': title or url,
+                        'url': url,
+                        'snippet': 'Result found in your Browsing History (Offline Mode).'
+                    })
+                    
+            return results
+        except Exception as ex:
+            print(f"Offline search failed: {ex}")
+            return None
+            
+    def generate_searcher_html(self, query, results, is_offline=False):
         html = f"""
         <!DOCTYPE html>
         <html>
@@ -147,6 +192,7 @@ class SearchEngineThread(QThread):
             <div class="header">
                 <div class="logo">Searcher</div>
                 <div class="search-bar">{query}</div>
+                {f'<div style="margin-left:20px; background:#f28b82; color:#000; padding:4px 8px; border-radius:10px; font-size:12px; font-weight:bold;">OFFLINE MODE</div>' if is_offline else ''}
             </div>
             <div class="container">
         """
