@@ -13,11 +13,14 @@ class SearcherPage(QWebEnginePage):
         self.parent_tabs = parent_tabs
         
     def acceptNavigationRequest(self, url, _type, isMainFrame):
-        # Allow all navigation by default
-        return super().acceptNavigationRequest(url, _type, isMainFrame)
+        """Allow all navigation types including clicked links, typed URLs, redirects, etc."""
+        # Allow all navigation by default — this ensures every link click works inside the browser
+        return True
 
     def createWindow(self, _type):
-        """Handle links that request opening in a new window (e.g. target='_blank') by opening a new tab."""
+        """Handle links that request opening in a new window/tab (target='_blank', window.open, etc.)."""
+        # All window types (WebBrowserTab, WebBrowserBackgroundTab, WebBrowserWindow, WebDialog)
+        # should open as a new tab inside our browser
         new_browser = self.parent_tabs.add_new_tab()
         return new_browser.page()
 
