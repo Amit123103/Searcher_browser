@@ -34,6 +34,7 @@ def get_dark_theme():
     QToolButton#navForwardBtn { qproperty-icon: url(assets/icons/forward_white.svg); }
     QToolButton#navReloadBtn { qproperty-icon: url(assets/icons/reload_white.svg); }
     QToolButton#navAiBtn { qproperty-icon: url(assets/icons/ai_white.svg); }
+    QToolButton#navMobileBtn { qproperty-icon: url(assets/icons/mobile_white.svg); }
     QToolButton#navBookmarkBtn { qproperty-icon: url(assets/icons/star_white.svg); }
     QToolButton#navMenuBtn { qproperty-icon: url(assets/icons/menu_white.svg); }
     
@@ -162,6 +163,7 @@ def get_light_theme():
     QToolButton#navForwardBtn { qproperty-icon: url(assets/icons/forward_black.svg); }
     QToolButton#navReloadBtn { qproperty-icon: url(assets/icons/reload_black.svg); }
     QToolButton#navAiBtn { qproperty-icon: url(assets/icons/ai_black.svg); }
+    QToolButton#navMobileBtn { qproperty-icon: url(assets/icons/mobile_black.svg); }
     QToolButton#navBookmarkBtn { qproperty-icon: url(assets/icons/star_black.svg); }
     QToolButton#navMenuBtn { qproperty-icon: url(assets/icons/menu_black.svg); }
     

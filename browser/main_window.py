@@ -89,6 +89,9 @@ class MainWindow(QMainWindow):
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         
+        self.desktop_geometry = None
+        self.is_mobile_view = False
+        
         # Main layout
         self.layout = QVBoxLayout(self.central_widget)
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -308,6 +311,39 @@ class MainWindow(QMainWindow):
             self.ai_sidebar.setVisible(not self.ai_sidebar.isVisible())
         else:
             self.ai_sidebar.setVisible(checked)
+            
+    def toggle_mobile_view(self, checked):
+        """Toggles a mobile emulation mode."""
+        self.is_mobile_view = checked
+        if checked:
+            # Set to a common mobile user agent (e.g. iPhone 13)
+            mobile_ua = "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1"
+            self.profile.setHttpUserAgent(mobile_ua)
+            # Store original geometry if not maximized
+            if not self.isMaximized():
+                self.desktop_geometry = self.geometry()
+            else:
+                self.desktop_geometry = None
+                self.showNormal()
+            # Resize to a mobile aspect ratio (e.g., iPhone size)
+            self.resize(400, 800)
+            self.status_bar.showMessage("Mobile View: Enabled", 3000)
+        else:
+            # Restore desktop user agent
+            desktop_ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            self.profile.setHttpUserAgent(desktop_ua)
+            # Restore window size
+            if hasattr(self, 'desktop_geometry') and self.desktop_geometry:
+                self.setGeometry(self.desktop_geometry)
+            else:
+                self.showMaximized()
+            self.status_bar.showMessage("Mobile View: Disabled", 3000)
+            
+        # Reload all tabs to apply the new User Agent
+        for i in range(self.tabs.count()):
+            browser = self.tabs.widget(i)
+            if hasattr(browser, 'reload'):
+                browser.reload()
         
     def get_current_page_text(self, callback):
         """Extracts text from the current webpage to pass to the AI."""

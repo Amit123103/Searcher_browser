@@ -72,6 +72,13 @@ class NavigationBar(QToolBar):
         self.ai_btn.clicked.connect(self.toggle_ai_sidebar)
         self.addWidget(self.ai_btn)
         
+        self.mobile_btn = QToolButton(self)
+        self.mobile_btn.setObjectName("navMobileBtn")
+        self.mobile_btn.setToolTip("Toggle Mobile View")
+        self.mobile_btn.setCheckable(True)
+        self.mobile_btn.clicked.connect(self.toggle_mobile_view)
+        self.addWidget(self.mobile_btn)
+        
         self.bookmark_btn = QToolButton(self)
         self.bookmark_btn.setObjectName("navBookmarkBtn")
         self.bookmark_btn.setToolTip("Bookmark current page")
@@ -151,6 +158,10 @@ class NavigationBar(QToolBar):
     def toggle_ai_sidebar(self, checked):
         if hasattr(self.parent_window, 'toggle_ai_sidebar'):
             self.parent_window.toggle_ai_sidebar(checked)
+            
+    def toggle_mobile_view(self, checked):
+        if hasattr(self.parent_window, 'toggle_mobile_view'):
+            self.parent_window.toggle_mobile_view(checked)
             
     def trigger_voice_search(self):
         if hasattr(self.parent_window, 'trigger_voice_search'):
