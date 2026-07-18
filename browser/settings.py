@@ -443,6 +443,38 @@ class SettingsTab(QWidget):
         typo_lay.addLayout(fonts_lay)
         
         app_card_layout.addWidget(typo_inner)
+        
+        # New Tab Page Background Card
+        bg_inner = QFrame()
+        bg_inner.setProperty("class", "InnerCard")
+        bg_lay = QVBoxLayout(bg_inner)
+        
+        bg_title_lbl = QLabel("New Tab Background Image")
+        bg_title_lbl.setProperty("class", "InnerTitle")
+        bg_lay.addWidget(bg_title_lbl)
+        
+        bg_actions_lay = QHBoxLayout()
+        self.btn_select_bg = QPushButton("Select Image")
+        self.btn_select_bg.setStyleSheet("background-color: #0ea5e9; color: #ffffff; border-radius: 8px; padding: 8px 16px; border: none; font-weight: 500;")
+        self.btn_select_bg.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_select_bg.clicked.connect(self.select_background_image)
+        
+        self.btn_clear_bg = QPushButton("Remove Background")
+        self.btn_clear_bg.setStyleSheet("background-color: #334155; color: #cbd5e1; border-radius: 8px; padding: 8px 16px; border: none; font-weight: 500;")
+        self.btn_clear_bg.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_clear_bg.clicked.connect(self.clear_background_image)
+        
+        bg_actions_lay.addWidget(self.btn_select_bg)
+        bg_actions_lay.addWidget(self.btn_clear_bg)
+        bg_actions_lay.addStretch()
+        bg_lay.addLayout(bg_actions_lay)
+        
+        self.lbl_bg_path = QLabel()
+        self.lbl_bg_path.setStyleSheet("color: #94a3b8; font-size: 11px; margin-top: 6px;")
+        self.update_bg_label()
+        bg_lay.addWidget(self.lbl_bg_path)
+        
+        app_card_layout.addWidget(bg_inner)
         app_lay.addWidget(app_card)
 
         # ==========================================
@@ -626,3 +658,50 @@ class SettingsTab(QWidget):
     def save_and_close(self):
         self.settings_manager.set("theme", "dark")
         self.accept()
+
+    def select_background_image(self):
+        from PyQt6.QtWidgets import QFileDialog
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Select Background Image", "", "Images (*.png *.jpg *.jpeg *.bmp *.webp *.svg)"
+        )
+        if file_path:
+            self.settings_manager.set("new_tab_bg", file_path)
+            self.update_bg_label()
+            self.apply_background_to_open_tabs(file_path)
+            
+    def clear_background_image(self):
+        self.settings_manager.set("new_tab_bg", "")
+        self.update_bg_label()
+        self.apply_background_to_open_tabs("")
+        
+    def update_bg_label(self):
+        bg = self.settings_manager.get("new_tab_bg", "")
+        if bg:
+            filename = os.path.basename(bg)
+            self.lbl_bg_path.setText(f"Active background: {filename}")
+        else:
+            self.lbl_bg_path.setText("No custom background selected. Using default theme.")
+            
+    def apply_background_to_open_tabs(self, bg_image):
+        from PyQt6.QtCore import QUrl
+        if not self.main_window:
+            return
+            
+        bg_url = QUrl.fromLocalFile(bg_image).toString() if bg_image and os.path.exists(bg_image) else bg_image
+        
+        script = f"""
+        if ('{bg_url}' === '') {{
+            document.body.style.backgroundImage = 'radial-gradient(circle at center 20%, #1e293b 0%, #020617 80%)';
+        }} else {{
+            document.body.style.backgroundImage = 'url("{bg_url}")';
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundPosition = 'center';
+            document.body.style.backgroundAttachment = 'fixed';
+        }}
+        """
+        
+        if hasattr(self.main_window, 'tabs'):
+            for i in range(self.main_window.tabs.count()):
+                browser = self.main_window.tabs.widget(i)
+                if hasattr(browser, 'url') and "start_page.html" in browser.url().toString():
+                    browser.page().runJavaScript(script)

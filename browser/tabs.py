@@ -214,3 +214,19 @@ class BrowserTabWidget(QTabWidget):
     def on_load_finished(self, ok, browser):
         if browser == self.current_browser():
             self.load_finished.emit(ok)
+            
+        url_str = browser.url().toString()
+        if "start_page.html" in url_str:
+            import os
+            main_window = self.window()
+            if hasattr(main_window, 'settings_manager'):
+                bg_image = main_window.settings_manager.get("new_tab_bg", "")
+                if bg_image and os.path.exists(bg_image):
+                    bg_url = QUrl.fromLocalFile(bg_image).toString()
+                    script = f"""
+                    document.body.style.backgroundImage = 'url("{bg_url}")';
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundPosition = 'center';
+                    document.body.style.backgroundAttachment = 'fixed';
+                    """
+                    browser.page().runJavaScript(script)
