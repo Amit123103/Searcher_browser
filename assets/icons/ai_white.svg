@@ -1,1 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Stylised "AI" spark: a central node with radiating connections — clear AI/neural symbol -->
+  <circle cx="12" cy="12" r="2.5"/>
+  <path d="M12 2v3.5M12 18.5V22M2 12h3.5M18.5 12H22"/>
+  <path d="M5.22 5.22l2.47 2.47M16.31 16.31l2.47 2.47M18.78 5.22l-2.47 2.47M7.69 16.31l-2.47 2.47"/>
+</svg>
