@@ -111,7 +111,7 @@ class NavigationBar(QToolBar):
         # Quick Tools
         self.ai_btn = QToolButton(self)
         self.ai_btn.setObjectName("navAiBtn")
-        self.ai_btn.setToolTip("Toggle AI Assistant")
+        self.ai_btn.setToolTip("Toggle Searcher AI Assistant")
         self.ai_btn.setIcon(get_asset_icon("ai", theme))
         self.ai_btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.ai_btn.setFixedSize(BTN_SIZE)
