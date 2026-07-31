@@ -365,15 +365,17 @@ class MainWindow(QMainWindow):
                 self.db_manager.add_history(url_str, title)
                 self.nav_bar.update_suggestions(self.db_manager.get_history(200))
         else:
-            self.status_bar.showMessage("Network Error / Offline", 3000)
+            self.status_bar.showMessage("Network Error", 3000)
             if url_str.startswith("http"):
-                offline_page_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "assets", "offline_page.html")
-                # We pass the failed URL so the offline page can try reconnecting to it
-                import urllib.parse
-                safe_url = urllib.parse.quote(url_str, safe='')
-                offline_url = QUrl.fromLocalFile(offline_page_path)
-                offline_url.setQuery(f"url={safe_url}")
-                browser.setUrl(offline_url)
+                # Only show offline_page.html if the machine is actually offline
+                if hasattr(self, 'offline_engine') and not self.offline_engine.is_online():
+                    offline_page_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "assets", "offline_page.html")
+                    import urllib.parse
+                    safe_url = urllib.parse.quote(url_str, safe='')
+                    offline_url = QUrl.fromLocalFile(offline_page_path)
+                    offline_url.setQuery(f"url={safe_url}")
+                    browser.setUrl(offline_url)
+
                 
     # --- Feature Dialogs and Actions ---
             

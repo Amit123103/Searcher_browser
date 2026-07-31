@@ -61,23 +61,35 @@ class OfflineDetector(QThread):
 
     def check_connection(self) -> bool:
         """
-        Tries lightweight HEAD requests against Cloudflare DNS and Google.
-        Returns True as soon as any endpoint responds with < 500.
-        Fails fast: 2-second timeout per attempt, stops at first success.
+        Robust connectivity detector using TCP sockets and lightweight HTTP checks.
+        Returns True as soon as any endpoint is reachable. Fast & reliable.
         """
-        endpoints = [
-            "https://1.1.1.1",
-            "https://8.8.8.8",
-            "https://www.google.com",
-        ]
-        for endpoint in endpoints:
+        import socket
+        import urllib.request
+
+        # 1. Quick TCP socket check to public DNS (fastest & most reliable, no SSL issues)
+        tcp_hosts = [("1.1.1.1", 53), ("8.8.8.8", 53), ("1.0.0.1", 53)]
+        for host, port in tcp_hosts:
             try:
-                resp = requests.head(endpoint, timeout=2.0, allow_redirects=True)
-                if resp.status_code < 500:
-                    return True
+                sock = socket.create_connection((host, port), timeout=1.5)
+                sock.close()
+                return True
             except Exception:
                 continue
+
+        # 2. HTTP fallback
+        endpoints = ["https://www.bing.com", "https://www.cloudflare.com", "https://www.google.com"]
+        for endpoint in endpoints:
+            try:
+                req = urllib.request.Request(endpoint, headers={'User-Agent': 'SearcherBrowser/1.0'})
+                with urllib.request.urlopen(req, timeout=2.0) as resp:
+                    if resp.status < 500:
+                        return True
+            except Exception:
+                continue
+
         return False
+
 
     def stop(self):
         self._running = False
