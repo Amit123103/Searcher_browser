@@ -60,11 +60,21 @@ class MainWindow(QMainWindow):
             self.profile.setHttpCacheType(QWebEngineProfile.HttpCacheType.DiskHttpCache)
             self.profile.setHttpCacheMaximumSize(500 * 1024 * 1024) # 500 MB cache for better offline support
             
-        # Offline Application Engine (includes ad blocking)
+        # Offline Application Engine (includes ad blocking + resource caching)
         self.offline_engine = OfflineEngine(self)
         self.profile.setUrlRequestInterceptor(self.offline_engine.interceptor)
         if not self.is_incognito:
             self.offline_engine.start()
+
+        # Register the offline cache scheme handler with the web profile.
+        # This allows the renderer to load 'searcher-cache://<hash>' URLs,
+        # which are served from the local ResourceCacheManager disk store.
+        from browser.offline_scheme_handler import OfflineCacheSchemeHandler
+        self._offline_scheme_handler = OfflineCacheSchemeHandler(
+            self.offline_engine.cache_manager, self
+        )
+        self.profile.installUrlSchemeHandler(b"searcher-cache", self._offline_scheme_handler)
+
         
         # Initialize Download Manager
         self.download_manager = DownloadManagerDialog(self)

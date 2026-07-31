@@ -1,4 +1,5 @@
 import os
+import json
 from PyQt6.QtWidgets import QTabWidget, QMenu, QToolButton
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtGui import QAction
@@ -11,7 +12,10 @@ _CLOSE_ICON_NORMAL = os.path.join(_ICONS_DIR, "close_white.svg").replace("\\", "
 _CLOSE_ICON_HOVER  = os.path.join(_ICONS_DIR, "close_white.svg").replace("\\", "/")
 
 class SearcherPage(QWebEnginePage):
-    """Custom page to intercept navigation requests."""
+    """Custom page to intercept navigation requests and harvest resource URLs."""
+    
+    # Emits the list of sub-resource URLs found on the page after load
+    resources_harvested = pyqtSignal(list)
     
     def __init__(self, profile, parent_browser, parent_tabs):
         super().__init__(profile, parent_browser)
@@ -20,15 +24,28 @@ class SearcherPage(QWebEnginePage):
         
     def acceptNavigationRequest(self, url, _type, isMainFrame):
         """Allow all navigation types including clicked links, typed URLs, redirects, etc."""
-        # Allow all navigation by default — this ensures every link click works inside the browser
         return True
 
     def createWindow(self, _type):
         """Handle links that request opening in a new window/tab (target='_blank', window.open, etc.)."""
-        # Create a blank tab — do NOT load the start page, because the engine
-        # will immediately navigate this page to the target URL itself.
         new_browser = self.parent_tabs.add_new_tab(qurl=QUrl("about:blank"), label="Loading...")
         return new_browser.page()
+
+    def javaScriptConsoleMessage(self, level, message, line_number, source_id):
+        """
+        Intercepts console.log messages from our injected PWADetector script.
+        The resource harvester emits: [Searcher:Resources]["url1", "url2", ...]
+        We parse this and trigger offline pre-caching.
+        """
+        if message.startswith('[Searcher:Resources]'):
+            try:
+                json_part = message[len('[Searcher:Resources]'):]
+                urls = json.loads(json_part)
+                if isinstance(urls, list) and urls:
+                    self.resources_harvested.emit(urls)
+            except Exception:
+                pass
+        # Let other console messages through (don't suppress developer output)
 
 class BrowserTabWidget(QTabWidget):
     """
@@ -160,6 +177,9 @@ class BrowserTabWidget(QTabWidget):
         browser.loadStarted.connect(lambda b=browser: self.on_load_started(b))
         browser.loadFinished.connect(lambda ok, b=browser: self.on_load_finished(ok, b))
         
+        # Wire resource harvesting → offline prefetch
+        page.resources_harvested.connect(lambda urls: self._on_resources_harvested(urls))
+        
         # Add tab and switch to it
         i = self.addTab(browser, label)
         self.setCurrentIndex(i)
@@ -169,7 +189,24 @@ class BrowserTabWidget(QTabWidget):
     def current_browser(self):
         """Returns the currently active QWebEngineView."""
         return self.currentWidget()
-        
+
+    def _on_resources_harvested(self, urls: list):
+        """
+        Called when the injected PWADetector script reports sub-resource URLs.
+        Passes the list to OfflineEngine.prefetch_page_resources() if online.
+        Only processes http(s) URLs — skips file://, blob:, data:, searcher://, etc.
+        """
+        main_window = self.window()
+        if not hasattr(main_window, 'offline_engine'):
+            return
+        engine = main_window.offline_engine
+        if not engine.is_online():
+            return  # Don't try to download while already offline
+
+        http_urls = [u for u in urls if isinstance(u, str) and u.startswith(("http://", "https://"))]
+        if http_urls:
+            engine.prefetch_page_resources(http_urls)
+
     def close_tab(self, i):
         """Closes the tab at index i. If it's the last tab, close the window."""
         if self.count() == 1:

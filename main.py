@@ -3,6 +3,12 @@ from PyQt6.QtWidgets import QApplication
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt
 
+# IMPORTANT: Custom URL schemes MUST be registered before QApplication is created.
+# This registers 'searcher-cache://' which is used by OfflineCacheSchemeHandler
+# to serve locally cached web resources back to the renderer when offline.
+from browser.offline_scheme_handler import register_offline_scheme
+register_offline_scheme()
+
 from browser.main_window import MainWindow
 
 def main():
