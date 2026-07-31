@@ -93,6 +93,13 @@ class NavigationBar(QToolBar):
         
         self.addWidget(self.url_bar)
         
+        # Offline Status Badge
+        self.offline_badge = None
+        if hasattr(self.parent_window, 'offline_engine'):
+            from browser.offline_ui import OfflineStatusBadge
+            self.offline_badge = OfflineStatusBadge(self.parent_window.offline_engine, self)
+            self.addWidget(self.offline_badge)
+        
         # Quick Tools
         self.ai_btn = QToolButton(self)
         self.ai_btn.setObjectName("navAiBtn")

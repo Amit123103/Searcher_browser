@@ -14,13 +14,15 @@ from browser.bookmarks import BookmarksDialog
 from browser.downloads import DownloadManagerDialog
 from browser.themes import apply_theme
 from browser.passwords import PasswordManagerDialog
-from browser.adblocker import AdBlockerInterceptor
 from browser.search_engine import SearchEngineThread
 
 # AI Features
 from browser.ai_service import AIService
 from browser.ai_sidebar import AISidebar
 from browser.voice import VoiceSearchDialog
+
+# Offline Application Engine
+from browser.offline_engine import OfflineEngine
 
 class MainWindow(QMainWindow):
     """
@@ -58,9 +60,11 @@ class MainWindow(QMainWindow):
             self.profile.setHttpCacheType(QWebEngineProfile.HttpCacheType.DiskHttpCache)
             self.profile.setHttpCacheMaximumSize(500 * 1024 * 1024) # 500 MB cache for better offline support
             
-        # Ad Blocker
-        self.ad_blocker = AdBlockerInterceptor(self)
-        self.profile.setUrlRequestInterceptor(self.ad_blocker)
+        # Offline Application Engine (includes ad blocking)
+        self.offline_engine = OfflineEngine(self)
+        self.profile.setUrlRequestInterceptor(self.offline_engine.interceptor)
+        if not self.is_incognito:
+            self.offline_engine.start()
         
         # Initialize Download Manager
         self.download_manager = DownloadManagerDialog(self)
@@ -473,7 +477,7 @@ class MainWindow(QMainWindow):
         self.status_bar.showMessage("Tabs organized by AI!", 3000)
 
     def closeEvent(self, event):
-        """Save session on close."""
+        """Save session on close and stop offline engine."""
         if not self.is_incognito:
             saved_session = []
             for i in range(self.tabs.count()):
@@ -486,5 +490,9 @@ class MainWindow(QMainWindow):
                     except Exception:
                         pass
             self.settings_manager.set("saved_session", saved_session)
+        
+        # Stop offline engine detector thread
+        if hasattr(self, 'offline_engine'):
+            self.offline_engine.stop()
             
         super().closeEvent(event)
