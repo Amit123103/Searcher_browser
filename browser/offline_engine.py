@@ -670,7 +670,7 @@ class OfflineRequestInterceptor(QWebEngineUrlRequestInterceptor):
 
         # 3. Offline handling
         if not self.offline_engine.is_online():
-            method = info.requestMethod().decode("utf-8", "ignore").upper()
+            method = bytes(info.requestMethod()).decode("utf-8", "ignore").upper()
 
             if method in ("POST", "PUT", "PATCH", "DELETE"):
                 # Queue mutation for later replay
@@ -755,16 +755,30 @@ class OfflineEngine(QObject):
         if not self._is_online or not url_list:
             return
 
-        # Cancel previous populator if still running
-        if self._populator and self._populator.isRunning():
-            self._populator.stop()
+        # Safely stop the previous populator.
+        # Guard with try/except because deleteLater() may have already destroyed
+        # the C++ object while the Python wrapper self._populator still exists.
+        if self._populator is not None:
+            try:
+                if self._populator.isRunning():
+                    self._populator.stop()
+            except RuntimeError:
+                pass  # C++ object already deleted — safe to ignore
+            self._populator = None
 
         populator = CachePopulatorThread(url_list, self.cache_manager, self)
         populator.progress.connect(self.cache_progress)
         populator.finished_caching.connect(self.cache_batch_done)
-        populator.finished.connect(populator.deleteLater)
+        # Clear self._populator BEFORE deleteLater so the next call
+        # doesn't get a dead C++ wrapper reference.
+        populator.finished.connect(self._on_populator_finished)
         populator.start()
         self._populator = populator
+
+    def _on_populator_finished(self):
+        """Nulls the populator reference when its thread finishes."""
+        self._populator = None
+
 
     def get_cached_response(self, url: str) -> Optional[Tuple[bytes, str]]:
         """
