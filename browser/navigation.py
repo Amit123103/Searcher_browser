@@ -311,15 +311,23 @@ class NavigationBar(QToolBar):
         
         if not url_text or url_text == "Searcher - Home":
             return
+            
+        if url_text.startswith("searcher://search?q="):
+            import urllib.parse
+            query = url_text.split("q=")[1]
+            search_page = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'search_results.html'))
+            search_url = QUrl.fromLocalFile(search_page).toString() + f"?q={query}"
+            browser.setUrl(QUrl(search_url))
+            return
         
         # Check if it's a search query
-        if " " in url_text or ("." not in url_text and not url_text.startswith(('http://', 'https://'))):
+        if " " in url_text or ("." not in url_text and not url_text.startswith(('http://', 'https://', 'file://', 'searcher://'))):
             search_page = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'search_results.html'))
             search_url = QUrl.fromLocalFile(search_page).toString() + f"?q={url_text}"
             url = QUrl(search_url)
             browser.setUrl(url)
         else:
-            if not url_text.startswith(('http://', 'https://', 'file://')):
+            if not url_text.startswith(('http://', 'https://', 'file://', 'searcher://')):
                 url_text = "https://" + url_text
             url = QUrl(url_text)
             browser.setUrl(url)
@@ -336,6 +344,20 @@ class NavigationBar(QToolBar):
             self.url_bar.is_home = True
             self.url_bar.setCursorPosition(0)
             self.url_lock_action.setIcon(get_asset_icon("search", theme))
+        elif "search_results.html" in url_str or "searcher://search" in url_str:
+            import urllib.parse
+            q_val = ""
+            if "q=" in url_str:
+                try:
+                    q_val = urllib.parse.unquote(url_str.split("q=")[1].split("&")[0])
+                except Exception:
+                    pass
+            display_text = f"searcher://search?q={q_val}" if q_val else "searcher://search"
+            self.url_bar.setText(display_text)
+            self.url_bar.setReadOnly(False)
+            self.url_bar.is_home = False
+            self.url_bar.setCursorPosition(0)
+            self.url_lock_action.setIcon(get_asset_icon("search", theme))
         else:
             self.url_bar.setReadOnly(False)
             self.url_bar.is_home = False
@@ -346,3 +368,4 @@ class NavigationBar(QToolBar):
                 self.url_lock_action.setIcon(get_asset_icon("lock", theme))
             else:
                 self.url_lock_action.setIcon(get_asset_icon("search", theme))
+

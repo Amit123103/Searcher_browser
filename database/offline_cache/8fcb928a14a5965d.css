@@ -1,0 +1,2 @@
+.site-search{display:grid;grid-template-columns:var(--layout-1-sidebar-right);padding-inline:var(--layout-side-padding)}@media (width < calc(1rem * 2 + 15rem + 2rem + 31rem)){.site-search{grid-template-columns:var(--layout-no-sidebar)}}mdn-site-search{grid-column:content}
+/*# sourceMappingURL=styles-site-search.3177bb12b1f83bf7.css.map*/
