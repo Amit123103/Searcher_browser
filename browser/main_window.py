@@ -208,27 +208,38 @@ class MainWindow(QMainWindow):
             controls_layout.setContentsMargins(0, 0, 0, 0)
             controls_layout.setSpacing(0)
             
-            min_btn = QPushButton()
-            min_btn.setObjectName("winControlMin")
-            min_btn.setToolTip("Minimize")
-            min_btn.setFixedSize(46, 34)
-            min_btn.clicked.connect(self.showMinimized)
+            icons_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets", "icons"))
+            min_icon = QIcon(os.path.join(icons_dir, "win_minimize.svg"))
+            max_icon = QIcon(os.path.join(icons_dir, "win_restore.svg" if self.isMaximized() else "win_maximize.svg"))
+            close_icon = QIcon(os.path.join(icons_dir, "win_close.svg"))
             
-            max_btn = QPushButton()
-            max_btn.setObjectName("winControlMax")
-            max_btn.setToolTip("Maximize")
-            max_btn.setFixedSize(46, 34)
-            max_btn.clicked.connect(self.toggle_maximize)
+            self.min_btn = QPushButton()
+            self.min_btn.setObjectName("winControlMin")
+            self.min_btn.setToolTip("Minimize")
+            self.min_btn.setIcon(min_icon)
+            self.min_btn.setIconSize(QSize(12, 12))
+            self.min_btn.setFixedSize(46, 34)
+            self.min_btn.clicked.connect(self.showMinimized)
             
-            close_btn = QPushButton()
-            close_btn.setObjectName("winControlClose")
-            close_btn.setToolTip("Close")
-            close_btn.setFixedSize(46, 34)
-            close_btn.clicked.connect(self.close)
+            self.max_btn = QPushButton()
+            self.max_btn.setObjectName("winControlMax")
+            self.max_btn.setToolTip("Maximize / Restore")
+            self.max_btn.setIcon(max_icon)
+            self.max_btn.setIconSize(QSize(12, 12))
+            self.max_btn.setFixedSize(46, 34)
+            self.max_btn.clicked.connect(self.toggle_maximize)
             
-            controls_layout.addWidget(min_btn)
-            controls_layout.addWidget(max_btn)
-            controls_layout.addWidget(close_btn)
+            self.close_btn = QPushButton()
+            self.close_btn.setObjectName("winControlClose")
+            self.close_btn.setToolTip("Close")
+            self.close_btn.setIcon(close_icon)
+            self.close_btn.setIconSize(QSize(12, 12))
+            self.close_btn.setFixedSize(46, 34)
+            self.close_btn.clicked.connect(self.close)
+            
+            controls_layout.addWidget(self.min_btn)
+            controls_layout.addWidget(self.max_btn)
+            controls_layout.addWidget(self.close_btn)
             
             top_row_layout.addLayout(controls_layout)
         
@@ -267,6 +278,19 @@ class MainWindow(QMainWindow):
         incognito_action.setShortcut("Ctrl+Shift+N")
         incognito_action.triggered.connect(self.open_incognito)
         file_menu.addAction(incognito_action)
+
+    def toggle_maximize(self):
+        """Toggles between maximized and restored window states."""
+        icons_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets", "icons"))
+        if self.isMaximized():
+            self.showNormal()
+            if hasattr(self, 'max_btn'):
+                self.max_btn.setIcon(QIcon(os.path.join(icons_dir, "win_maximize.svg")))
+        else:
+            self.showMaximized()
+            if hasattr(self, 'max_btn'):
+                self.max_btn.setIcon(QIcon(os.path.join(icons_dir, "win_restore.svg")))
+
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
