@@ -40,6 +40,8 @@ class NavigationBar(QToolBar):
         self.setObjectName("navBar")
         self.setMovable(False)
         self.setIconSize(QSize(18, 18))
+        self.setContentsMargins(8, 0, 8, 0)
+        self.setFixedHeight(46)
         
         self.setup_ui()
         
@@ -49,11 +51,14 @@ class NavigationBar(QToolBar):
             theme = self.parent_window.settings_manager.get("theme", "dark")
             
         # 1. Primary Navigation Actions
+        BTN_SIZE = QSize(32, 32)
+        
         self.back_btn = QToolButton(self)
         self.back_btn.setObjectName("navBackBtn")
         self.back_btn.setToolTip("Go back (Alt+Left)")
         self.back_btn.setIcon(get_asset_icon("back", theme))
         self.back_btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.back_btn.setFixedSize(BTN_SIZE)
         self.back_btn.clicked.connect(self.navigate_back)
         self.back_btn.setEnabled(False)
         self.addWidget(self.back_btn)
@@ -63,6 +68,7 @@ class NavigationBar(QToolBar):
         self.forward_btn.setToolTip("Go forward (Alt+Right)")
         self.forward_btn.setIcon(get_asset_icon("forward", theme))
         self.forward_btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.forward_btn.setFixedSize(BTN_SIZE)
         self.forward_btn.clicked.connect(self.navigate_forward)
         self.forward_btn.setEnabled(False)
         self.addWidget(self.forward_btn)
@@ -72,13 +78,15 @@ class NavigationBar(QToolBar):
         self.reload_btn.setToolTip("Reload page (F5)")
         self.reload_btn.setIcon(get_asset_icon("reload", theme))
         self.reload_btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.reload_btn.setFixedSize(BTN_SIZE)
         self.reload_btn.clicked.connect(self.navigate_reload)
         self.addWidget(self.reload_btn)
         
-        # 2. Address Bar (Expanding)
+        # 2. Address Bar (Expanding) — fixed height so icon centers properly
         self.url_bar = ClickableUrlBar()
         self.url_bar.setPlaceholderText("Search Google or enter URL...")
         self.url_bar.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.url_bar.setFixedHeight(32)
         self.url_bar.returnPressed.connect(self.navigate_to_url)
         
         # Add Security Lock Leading Action to URL Bar
@@ -106,6 +114,7 @@ class NavigationBar(QToolBar):
         self.ai_btn.setToolTip("Toggle AI Assistant")
         self.ai_btn.setIcon(get_asset_icon("ai", theme))
         self.ai_btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.ai_btn.setFixedSize(BTN_SIZE)
         self.ai_btn.setCheckable(True)
         self.ai_btn.clicked.connect(self.toggle_ai_sidebar)
         self.addWidget(self.ai_btn)
@@ -115,6 +124,7 @@ class NavigationBar(QToolBar):
         self.mobile_btn.setToolTip("Toggle Mobile View")
         self.mobile_btn.setIcon(get_asset_icon("mobile", theme))
         self.mobile_btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.mobile_btn.setFixedSize(BTN_SIZE)
         self.mobile_btn.setCheckable(True)
         self.mobile_btn.clicked.connect(self.toggle_mobile_view)
         self.addWidget(self.mobile_btn)
@@ -124,6 +134,7 @@ class NavigationBar(QToolBar):
         self.bookmark_btn.setToolTip("Bookmark this page (Ctrl+D)")
         self.bookmark_btn.setIcon(get_asset_icon("star", theme))
         self.bookmark_btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.bookmark_btn.setFixedSize(BTN_SIZE)
         self.bookmark_btn.clicked.connect(self.bookmark_page)
         self.addWidget(self.bookmark_btn)
         
@@ -133,6 +144,7 @@ class NavigationBar(QToolBar):
         self.menu_btn.setToolTip("Menu & Settings")
         self.menu_btn.setIcon(get_asset_icon("menu", theme))
         self.menu_btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.menu_btn.setFixedSize(BTN_SIZE)
         self.menu_btn.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         self.setup_menu_dropdown()
         self.addWidget(self.menu_btn)

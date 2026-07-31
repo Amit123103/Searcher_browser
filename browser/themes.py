@@ -23,8 +23,12 @@ def get_dark_theme():
         background-color: #1E293B;
         border: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        padding: 4px 10px;
-        spacing: 6px;
+        padding: 0px 4px;
+        spacing: 4px;
+    }
+
+    QToolBar#navBar QWidget {
+        margin: 0px;
     }
 
     QToolButton {
@@ -33,8 +37,6 @@ def get_dark_theme():
         border-radius: 8px;
         padding: 5px;
         color: #94A3B8;
-        min-width: 28px;
-        min-height: 28px;
     }
     QToolButton:hover {
         background-color: rgba(255, 255, 255, 0.08);
@@ -57,8 +59,6 @@ def get_dark_theme():
         background-color: rgba(255, 255, 255, 0.05);
         border-radius: 6px;
         margin-left: 2px;
-        min-width: 28px;
-        min-height: 28px;
     }
     QToolButton#newTabBtn:hover {
         background-color: rgba(255, 255, 255, 0.12);
@@ -68,8 +68,8 @@ def get_dark_theme():
     QLineEdit#urlBar {
         background-color: #0F172A;
         color: #F8FAFC;
-        border-radius: 16px;
-        padding: 6px 14px;
+        border-radius: 14px;
+        padding: 4px 14px 4px 6px;
         font-size: 13px;
         font-family: 'Segoe UI', system-ui, sans-serif;
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -188,8 +188,8 @@ def get_light_theme():
         background-color: #FFFFFF;
         border: none;
         border-bottom: 1px solid #CBD5E1;
-        padding: 4px 10px;
-        spacing: 6px;
+        padding: 0px 4px;
+        spacing: 4px;
     }
     QToolButton {
         background-color: transparent;
@@ -197,8 +197,6 @@ def get_light_theme():
         border-radius: 8px;
         padding: 5px;
         color: #475569;
-        min-width: 28px;
-        min-height: 28px;
     }
     QToolButton:hover {
         background-color: #F1F5F9;
@@ -210,8 +208,8 @@ def get_light_theme():
     QLineEdit#urlBar {
         background-color: #F1F5F9;
         color: #0F172A;
-        border-radius: 16px;
-        padding: 6px 14px;
+        border-radius: 14px;
+        padding: 4px 14px 4px 6px;
         font-size: 13px;
         border: 1px solid #CBD5E1;
     }
