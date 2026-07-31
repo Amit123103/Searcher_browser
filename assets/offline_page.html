@@ -108,23 +108,19 @@
             isChecking = true;
             
             try {
-                // Ping a reliable small endpoint to check connectivity
-                const response = await fetch('https://www.google.com/favicon.ico?' + new Date().getTime(), {
-                    mode: 'no-cors',
-                    cache: 'no-cache'
-                });
+                // Ping target URL to verify connectivity
+                await fetch(targetUrl, { mode: 'no-cors', cache: 'no-cache' });
                 
-                // If the fetch succeeds (even opaque response), we have internet!
                 document.querySelector('.status-dot').style.backgroundColor = '#81c995';
                 document.querySelector('.status-badge').innerHTML = '<span class="status-dot" style="background-color: #81c995;"></span> Connection restored! Reloading...';
                 
-                // Wait 1 second then reload original page
                 setTimeout(() => {
                     window.location.href = targetUrl;
-                }, 1000);
+                }, 800);
             } catch (error) {
                 // Still offline
             }
+
             
             isChecking = false;
         }
