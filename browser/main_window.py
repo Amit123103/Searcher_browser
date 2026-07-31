@@ -161,33 +161,70 @@ class MainWindow(QMainWindow):
         title_spacer.is_titlebar_drag = True
         top_row_layout.addWidget(title_spacer)
         
-        # Window control buttons (macOS Dot Controls: Red, Yellow, Green)
-        close_btn = QPushButton("✕")
-        close_btn.setObjectName("winControlClose")
-        close_btn.setToolTip("Close")
-        close_btn.setFixedSize(14, 14)
-        close_btn.clicked.connect(self.close)
-        
-        min_btn = QPushButton("—")
-        min_btn.setObjectName("winControlMin")
-        min_btn.setToolTip("Minimize")
-        min_btn.setFixedSize(14, 14)
-        min_btn.clicked.connect(self.showMinimized)
-        
-        max_btn = QPushButton("⤢")
-        max_btn.setObjectName("winControlMax")
-        max_btn.setToolTip("Maximize")
-        max_btn.setFixedSize(14, 14)
-        max_btn.clicked.connect(self.toggle_maximize)
+        # Window control buttons — OS-adaptive
+        import sys
+        self._platform = sys.platform  # 'win32', 'darwin', 'linux'
         
         controls_layout = QHBoxLayout()
-        controls_layout.setContentsMargins(6, 4, 4, 4)
-        controls_layout.setSpacing(8)
-        controls_layout.addWidget(close_btn)
-        controls_layout.addWidget(min_btn)
-        controls_layout.addWidget(max_btn)
         
-        top_row_layout.addLayout(controls_layout)
+        if self._platform == 'darwin':
+            # macOS Traffic Light Dots: Close (Red), Minimize (Yellow), Maximize (Green) — LEFT side
+            controls_layout.setContentsMargins(0, 4, 6, 4)
+            controls_layout.setSpacing(8)
+            
+            close_btn = QPushButton()
+            close_btn.setObjectName("winControlClose")
+            close_btn.setToolTip("Close")
+            close_btn.setFixedSize(14, 14)
+            close_btn.clicked.connect(self.close)
+            
+            min_btn = QPushButton()
+            min_btn.setObjectName("winControlMin")
+            min_btn.setToolTip("Minimize")
+            min_btn.setFixedSize(14, 14)
+            min_btn.clicked.connect(self.showMinimized)
+            
+            max_btn = QPushButton()
+            max_btn.setObjectName("winControlMax")
+            max_btn.setToolTip("Maximize")
+            max_btn.setFixedSize(14, 14)
+            max_btn.clicked.connect(self.toggle_maximize)
+            
+            controls_layout.addWidget(close_btn)
+            controls_layout.addWidget(min_btn)
+            controls_layout.addWidget(max_btn)
+            
+            # On macOS controls go BEFORE brand logo (far left)
+            top_row_layout.insertLayout(0, controls_layout)
+            
+        else:
+            # Windows & Linux: Rectangular hover buttons on the RIGHT side
+            controls_layout.setContentsMargins(6, 0, 0, 0)
+            controls_layout.setSpacing(0)
+            
+            min_btn = QPushButton("🗕")
+            min_btn.setObjectName("winControlMin")
+            min_btn.setToolTip("Minimize")
+            min_btn.setFixedSize(46, 32)
+            min_btn.clicked.connect(self.showMinimized)
+            
+            max_btn = QPushButton("🗖")
+            max_btn.setObjectName("winControlMax")
+            max_btn.setToolTip("Maximize")
+            max_btn.setFixedSize(46, 32)
+            max_btn.clicked.connect(self.toggle_maximize)
+            
+            close_btn = QPushButton("🗙")
+            close_btn.setObjectName("winControlClose")
+            close_btn.setToolTip("Close")
+            close_btn.setFixedSize(46, 32)
+            close_btn.clicked.connect(self.close)
+            
+            controls_layout.addWidget(min_btn)
+            controls_layout.addWidget(max_btn)
+            controls_layout.addWidget(close_btn)
+            
+            top_row_layout.addLayout(controls_layout)
         
         # Add Title Bar row first, then Toolbar, then Web Tab Stack
         self.layout.addWidget(self.top_row_widget)

@@ -15,45 +15,8 @@ def get_dark_theme():
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
     
-    /* Window Control Dots */
-    QPushButton#winControlClose {
-        background-color: #FF5F56;
-        border: none;
-        border-radius: 6px;
-        color: transparent;
-        font-weight: bold;
-        font-size: 10px;
-    }
-    QPushButton#winControlClose:hover {
-        background-color: #FF3B30;
-        color: #580000;
-    }
-    
-    QPushButton#winControlMin {
-        background-color: #FFBD2E;
-        border: none;
-        border-radius: 6px;
-        color: transparent;
-        font-weight: bold;
-        font-size: 10px;
-    }
-    QPushButton#winControlMin:hover {
-        background-color: #FFCC00;
-        color: #584000;
-    }
-    
-    QPushButton#winControlMax {
-        background-color: #27C93F;
-        border: none;
-        border-radius: 6px;
-        color: transparent;
-        font-weight: bold;
-        font-size: 10px;
-    }
-    QPushButton#winControlMax:hover {
-        background-color: #34C759;
-        color: #004000;
-    }
+    /* Window Control Buttons — injected per-platform */
+    {WIN_CONTROL_STYLES}
 
     /* Navigation Toolbar */
     QToolBar#navBar {
@@ -219,42 +182,8 @@ def get_light_theme():
         background-color: #E2E8F0;
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
-    QPushButton#winControlClose {
-        background-color: #FF5F56;
-        border: none;
-        border-radius: 6px;
-        color: transparent;
-        font-weight: bold;
-        font-size: 10px;
-    }
-    QPushButton#winControlClose:hover {
-        background-color: #FF3B30;
-        color: #580000;
-    }
-    QPushButton#winControlMin {
-        background-color: #FFBD2E;
-        border: none;
-        border-radius: 6px;
-        color: transparent;
-        font-weight: bold;
-        font-size: 10px;
-    }
-    QPushButton#winControlMin:hover {
-        background-color: #FFCC00;
-        color: #584000;
-    }
-    QPushButton#winControlMax {
-        background-color: #27C93F;
-        border: none;
-        border-radius: 6px;
-        color: transparent;
-        font-weight: bold;
-        font-size: 10px;
-    }
-    QPushButton#winControlMax:hover {
-        background-color: #34C759;
-        color: #004000;
-    }
+    /* Window Control Buttons — injected per-platform */
+    {WIN_CONTROL_STYLES}
     QToolBar#navBar {
         background-color: #FFFFFF;
         border: none;
@@ -308,8 +237,106 @@ def get_light_theme():
     }
     """
 
-def apply_theme(app, theme_name="dark"):
-    if theme_name == "light":
-        app.setStyleSheet(get_light_theme())
+def _get_win_control_styles_for_platform(theme_name="dark"):
+    """Generate window control button QSS that matches the current OS."""
+    import sys
+    platform = sys.platform
+    
+    if platform == 'darwin':
+        # macOS Traffic Light Dots
+        return """
+    QPushButton#winControlClose {
+        background-color: #FF5F56;
+        border: none;
+        border-radius: 7px;
+        color: transparent;
+        font-weight: bold;
+        font-size: 9px;
+    }
+    QPushButton#winControlClose:hover {
+        background-color: #FF3B30;
+        color: #4D0000;
+    }
+    QPushButton#winControlMin {
+        background-color: #FFBD2E;
+        border: none;
+        border-radius: 7px;
+        color: transparent;
+        font-weight: bold;
+        font-size: 9px;
+    }
+    QPushButton#winControlMin:hover {
+        background-color: #FFCC00;
+        color: #4D3600;
+    }
+    QPushButton#winControlMax {
+        background-color: #27C93F;
+        border: none;
+        border-radius: 7px;
+        color: transparent;
+        font-weight: bold;
+        font-size: 9px;
+    }
+    QPushButton#winControlMax:hover {
+        background-color: #34C759;
+        color: #003300;
+    }
+    """
     else:
-        app.setStyleSheet(get_dark_theme())
+        # Windows 10/11 & Linux — rectangular Chrome-style buttons
+        is_dark = (theme_name == "dark")
+        bg = "transparent"
+        fg = "#C8CCD0" if is_dark else "#3C4043"
+        hover_min_bg = "rgba(255,255,255,0.08)" if is_dark else "rgba(0,0,0,0.06)"
+        hover_max_bg = "rgba(255,255,255,0.08)" if is_dark else "rgba(0,0,0,0.06)"
+        hover_close_bg = "#E81123"
+        hover_close_fg = "#FFFFFF"
+        pressed_close_bg = "#F1707A"
+        pressed_min_bg = "rgba(255,255,255,0.12)" if is_dark else "rgba(0,0,0,0.10)"
+        
+        return f"""
+    QPushButton#winControlMin, QPushButton#winControlMax {{
+        background-color: {bg};
+        border: none;
+        border-radius: 0px;
+        color: {fg};
+        font-size: 11px;
+        font-family: 'Segoe MDL2 Assets', 'Segoe UI Symbol', sans-serif;
+    }}
+    QPushButton#winControlMin:hover {{
+        background-color: {hover_min_bg};
+    }}
+    QPushButton#winControlMin:pressed {{
+        background-color: {pressed_min_bg};
+    }}
+    QPushButton#winControlMax:hover {{
+        background-color: {hover_max_bg};
+    }}
+    QPushButton#winControlMax:pressed {{
+        background-color: {pressed_min_bg};
+    }}
+    QPushButton#winControlClose {{
+        background-color: {bg};
+        border: none;
+        border-radius: 0px;
+        color: {fg};
+        font-size: 11px;
+        font-family: 'Segoe MDL2 Assets', 'Segoe UI Symbol', sans-serif;
+    }}
+    QPushButton#winControlClose:hover {{
+        background-color: {hover_close_bg};
+        color: {hover_close_fg};
+    }}
+    QPushButton#winControlClose:pressed {{
+        background-color: {pressed_close_bg};
+        color: {hover_close_fg};
+    }}
+    """
+
+def apply_theme(app, theme_name="dark"):
+    win_styles = _get_win_control_styles_for_platform(theme_name)
+    if theme_name == "light":
+        stylesheet = get_light_theme().replace("{WIN_CONTROL_STYLES}", win_styles)
+    else:
+        stylesheet = get_dark_theme().replace("{WIN_CONTROL_STYLES}", win_styles)
+    app.setStyleSheet(stylesheet)
