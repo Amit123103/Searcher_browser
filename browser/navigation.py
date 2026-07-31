@@ -297,7 +297,7 @@ class NavigationBar(QToolBar):
             
         url_text = self.url_bar.text().strip()
         
-        if not url_text or url_text == "🏠 Searcher - Home":
+        if not url_text or url_text == "Searcher - Home":
             return
         
         # Check if it's a search query
@@ -319,7 +319,7 @@ class NavigationBar(QToolBar):
             theme = self.parent_window.settings_manager.get("theme", "dark")
             
         if "start_page.html" in url_str or url_str == "about:blank":
-            self.url_bar.setText("🏠 Searcher - Home")
+            self.url_bar.setText("Searcher - Home")
             self.url_bar.setReadOnly(True)
             self.url_bar.is_home = True
             self.url_bar.setCursorPosition(0)

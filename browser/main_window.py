@@ -198,26 +198,26 @@ class MainWindow(QMainWindow):
             top_row_layout.insertLayout(0, controls_layout)
             
         else:
-            # Windows & Linux: Rectangular hover buttons on the RIGHT side
-            controls_layout.setContentsMargins(6, 0, 0, 0)
+            # Windows & Linux: Clean rectangular hover buttons on the RIGHT side
+            controls_layout.setContentsMargins(0, 0, 0, 0)
             controls_layout.setSpacing(0)
             
-            min_btn = QPushButton("🗕")
+            min_btn = QPushButton()
             min_btn.setObjectName("winControlMin")
             min_btn.setToolTip("Minimize")
-            min_btn.setFixedSize(46, 32)
+            min_btn.setFixedSize(46, 34)
             min_btn.clicked.connect(self.showMinimized)
             
-            max_btn = QPushButton("🗖")
+            max_btn = QPushButton()
             max_btn.setObjectName("winControlMax")
             max_btn.setToolTip("Maximize")
-            max_btn.setFixedSize(46, 32)
+            max_btn.setFixedSize(46, 34)
             max_btn.clicked.connect(self.toggle_maximize)
             
-            close_btn = QPushButton("🗙")
+            close_btn = QPushButton()
             close_btn.setObjectName("winControlClose")
             close_btn.setToolTip("Close")
-            close_btn.setFixedSize(46, 32)
+            close_btn.setFixedSize(46, 34)
             close_btn.clicked.connect(self.close)
             
             controls_layout.addWidget(min_btn)
