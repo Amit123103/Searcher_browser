@@ -103,8 +103,8 @@ def get_dark_theme():
     }
     QTabBar::tab {
         background-color: #0F172A;
-        color: #94A3B8;
-        padding: 7px 24px 7px 12px;
+        color: #64748B;
+        padding: 7px 6px 7px 14px;
         border-top-left-radius: 8px;
         border-top-right-radius: 8px;
         border-bottom-left-radius: 0px;
@@ -113,20 +113,22 @@ def get_dark_theme():
         max-width: 220px;
         font-size: 12px;
         font-weight: 500;
-        margin-right: 3px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        margin-right: 2px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
         border-bottom: none;
     }
     QTabBar::tab:selected {
         background-color: #1E293B;
         color: #F8FAFC;
         font-weight: 600;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-bottom: 1px solid #1E293B;
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-bottom: 2px solid #38BDF8;
     }
     QTabBar::tab:hover:!selected {
-        background-color: #162035;
-        color: #CBD5E1;
+        background-color: #131C2E;
+        color: #94A3B8;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-bottom: none;
     }
 
     /* Menus & Tooltips */

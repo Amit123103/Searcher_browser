@@ -1,8 +1,14 @@
+import os
 from PyQt6.QtWidgets import QTabWidget, QMenu, QToolButton
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtGui import QAction
 from PyQt6.QtCore import QUrl, pyqtSignal, Qt, QUrlQuery
 from PyQt6.QtWebEngineCore import QWebEnginePage
+
+# Resolve absolute paths for close button icons
+_ICONS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets", "icons"))
+_CLOSE_ICON_NORMAL = os.path.join(_ICONS_DIR, "close_white.svg").replace("\\", "/")
+_CLOSE_ICON_HOVER  = os.path.join(_ICONS_DIR, "close_white.svg").replace("\\", "/")
 
 class SearcherPage(QWebEnginePage):
     """Custom page to intercept navigation requests."""
@@ -41,26 +47,30 @@ class BrowserTabWidget(QTabWidget):
         self.setDocumentMode(True) # Removes extra borders around the tab widget
         self.setTabsClosable(True)
         self.setMovable(True) # Enable tab reordering
-        # Compact close button styling inside tab
-        self.tabBar().setStyleSheet("""
-            QTabBar::close-button {
+
+        # Build close button stylesheet using real file paths (Qt ignores data: URIs)
+        close_btn_style = f"""
+            QTabBar::close-button {{
                 subcontrol-position: right center;
-                margin-right: 2px;
-                margin-left: 2px;
-                width: 12px;
-                height: 12px;
+                width: 16px;
+                height: 16px;
+                margin: 0px 3px 0px 2px;
+                border-radius: 4px;
+                image: url("{_CLOSE_ICON_NORMAL}");
                 background: transparent;
-                border-radius: 2px;
-                image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="%23666666" d="M2 2l8 8M10 2L2 10" stroke="%23666666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');
-            }
-            QTabBar::close-button:hover {
-                background-color: #e74c3c;
-                image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="%23ffffff" d="M2 2l8 8M10 2L2 10" stroke="%23ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');
-            }
-            QTabBar::close-button:pressed {
-                background-color: #c0392b;
-            }
-        """)
+            }}
+            QTabBar::close-button:hover {{
+                background-color: rgba(255, 255, 255, 0.12);
+                border-radius: 4px;
+                image: url("{_CLOSE_ICON_NORMAL}");
+            }}
+            QTabBar::close-button:pressed {{
+                background-color: rgba(255, 255, 255, 0.20);
+                border-radius: 4px;
+            }}
+        """
+        self.tabBar().setStyleSheet(close_btn_style)
+
         self.tabCloseRequested.connect(self.close_tab)
         self.currentChanged.connect(self.on_current_tab_changed)
         
