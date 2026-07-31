@@ -118,10 +118,24 @@ class MainWindow(QMainWindow):
         top_row_layout.setContentsMargins(12, 6, 12, 0)
         top_row_layout.setSpacing(6)
         
-        # App Branding Logo (Far Left)
+        # App Branding Logo & Text (Far Left)
+        from PyQt6.QtGui import QPixmap
+        brand_container = QWidget()
+        brand_layout = QHBoxLayout(brand_container)
+        brand_layout.setContentsMargins(0, 0, 8, 0)
+        brand_layout.setSpacing(6)
+        
+        brand_icon = QLabel()
+        logo_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets", "logo.png"))
+        if os.path.exists(logo_path):
+            pix = QPixmap(logo_path).scaled(22, 22, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+            brand_icon.setPixmap(pix)
+            brand_layout.addWidget(brand_icon)
+            
         self.brand_label = QLabel("Searcher")
-        self.brand_label.setStyleSheet("font-size: 13px; font-weight: 700; color: #38BDF8; padding-right: 8px;")
-        top_row_layout.addWidget(self.brand_label)
+        self.brand_label.setStyleSheet("font-size: 13px; font-weight: 700; color: #F8FAFC;")
+        brand_layout.addWidget(self.brand_label)
+        top_row_layout.addWidget(brand_container)
         
         # Tab bar takes the main space
         self.tabs.tabBar().setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
