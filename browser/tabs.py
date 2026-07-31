@@ -40,6 +40,7 @@ class BrowserTabWidget(QTabWidget):
         super().__init__(parent)
         self.setDocumentMode(True) # Removes extra borders around the tab widget
         self.setTabsClosable(True)
+        self.setMovable(True) # Enable tab reordering
         # Compact close button styling inside tab
         self.tabBar().setStyleSheet("""
             QTabBar::close-button {

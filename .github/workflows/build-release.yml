@@ -39,7 +39,7 @@ jobs:
           }
       
       - name: Upload Windows EXE
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: searcher-windows-exe
           path: dist/Searcher.exe

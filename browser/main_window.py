@@ -103,71 +103,79 @@ class MainWindow(QMainWindow):
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSpacing(0)
         
-        # Initialize Tabs
+        # Initialize Tabs and Navigation Bar
         self.tabs = BrowserTabWidget(self)
-        
-        # Initialize Navigation Bar
         self.nav_bar = NavigationBar(self)
         
-        # Top Row for Tabs and Buttons (Chrome-style: tabs on very top)
-        from PyQt6.QtWidgets import QToolButton, QPushButton, QHBoxLayout
-        from PyQt6.QtGui import QIcon
+        # Top Title Bar / Tab Row Widget
+        from PyQt6.QtWidgets import QToolButton, QPushButton, QHBoxLayout, QLabel
+        from PyQt6.QtCore import QSize
+        from browser.navigation import get_asset_icon
         
-        top_row_widget = QWidget()
-        top_row_widget.setObjectName("tabBarRow")
-        top_row_widget.setStyleSheet("""
-            #tabBarRow {
-                background-color: transparent;
-                padding: 0px;
-            }
-        """)
-        top_row_layout = QHBoxLayout(top_row_widget)
-        top_row_layout.setContentsMargins(8, 4, 8, 0)
-        top_row_layout.setSpacing(4)
+        self.top_row_widget = QWidget()
+        self.top_row_widget.setObjectName("titleBarRow")
+        top_row_layout = QHBoxLayout(self.top_row_widget)
+        top_row_layout.setContentsMargins(12, 6, 12, 0)
+        top_row_layout.setSpacing(6)
+        
+        # App Branding Logo (Far Left)
+        self.brand_label = QLabel("Searcher")
+        self.brand_label.setStyleSheet("font-size: 13px; font-weight: 700; color: #38BDF8; padding-right: 8px;")
+        top_row_layout.addWidget(self.brand_label)
         
         # Tab bar takes the main space
         self.tabs.tabBar().setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         top_row_layout.addWidget(self.tabs.tabBar())
         
         # Add New Tab button (+)
+        theme = self.settings_manager.get("theme", "dark")
         self.new_tab_btn = QToolButton(self)
         self.new_tab_btn.setObjectName("newTabBtn")
-        self.new_tab_btn.setText("+")
-        self.new_tab_btn.setToolTip("Open a new tab")
+        self.new_tab_btn.setToolTip("Open a new tab (Ctrl+T)")
+        self.new_tab_btn.setIcon(get_asset_icon("plus", theme))
+        self.new_tab_btn.setIconSize(QSize(14, 14))
         self.new_tab_btn.clicked.connect(lambda: self.tabs.add_new_tab())
         top_row_layout.addWidget(self.new_tab_btn)
         
-        top_row_layout.addStretch(1)
+        # Draggable title bar spacer
+        title_spacer = QWidget()
+        title_spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        title_spacer.is_titlebar_drag = True
+        top_row_layout.addWidget(title_spacer)
         
+        # Window control buttons (macOS Dot Controls: Red, Yellow, Green)
+        close_btn = QPushButton("✕")
+        close_btn.setObjectName("winControlClose")
+        close_btn.setToolTip("Close")
+        close_btn.setFixedSize(14, 14)
+        close_btn.clicked.connect(self.close)
         
-        # Window control buttons (minimize, maximize, close)
-        for btn_text, btn_action, btn_style in [
-            ("—", lambda: self.showMinimized(), "background: #ffbd2e; border-radius: 6px; width: 12px; height: 12px; margin: 8px; color: transparent;"),
-            ("☐", lambda: self.toggle_maximize(), "background: #27c93f; border-radius: 6px; width: 12px; height: 12px; margin: 8px; color: transparent;"),
-            ("✕", lambda: self.close(), "background: #ff5f56; border-radius: 6px; width: 12px; height: 12px; margin: 8px; color: transparent;")
-        ]:
-            btn = QPushButton("")
-            btn.setFixedSize(28, 28)
-            btn.setStyleSheet(f"""
-                QPushButton {{
-                    {btn_style}
-                    border: none;
-                }}
-                QPushButton:hover {{
-                    opacity: 0.8;
-                }}
-            """)
-            btn.clicked.connect(btn_action)
-            top_row_layout.addWidget(btn)
+        min_btn = QPushButton("—")
+        min_btn.setObjectName("winControlMin")
+        min_btn.setToolTip("Minimize")
+        min_btn.setFixedSize(14, 14)
+        min_btn.clicked.connect(self.showMinimized)
         
-        # Add Tabs top row first, then Toolbar
-        self.layout.addWidget(top_row_widget)
+        max_btn = QPushButton("⤢")
+        max_btn.setObjectName("winControlMax")
+        max_btn.setToolTip("Maximize")
+        max_btn.setFixedSize(14, 14)
+        max_btn.clicked.connect(self.toggle_maximize)
+        
+        controls_layout = QHBoxLayout()
+        controls_layout.setContentsMargins(6, 4, 4, 4)
+        controls_layout.setSpacing(8)
+        controls_layout.addWidget(close_btn)
+        controls_layout.addWidget(min_btn)
+        controls_layout.addWidget(max_btn)
+        
+        top_row_layout.addLayout(controls_layout)
+        
+        # Add Title Bar row first, then Toolbar, then Web Tab Stack
+        self.layout.addWidget(self.top_row_widget)
         self.layout.addWidget(self.nav_bar)
-        
-        # Add the tab widget content area (the stacked pages)
         self.layout.addWidget(self.tabs)
         
-        # (Removed redundant nav_bar creation)
         # Initialize Status Bar
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
@@ -187,7 +195,7 @@ class MainWindow(QMainWindow):
         # AI Sidebar Setup
         self.ai_sidebar = AISidebar(self.ai_service, self)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.ai_sidebar)
-        self.ai_sidebar.hide() # Hidden by default
+        self.ai_sidebar.hide()
         self.ai_sidebar.visibilityChanged.connect(self.nav_bar.ai_btn.setChecked)
 
     def setup_menus(self):
@@ -200,15 +208,26 @@ class MainWindow(QMainWindow):
         file_menu.addAction(incognito_action)
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton and event.pos().y() < 120:
-            self.dragPos = event.globalPosition().toPoint()
-            event.accept()
+        if event.button() == Qt.MouseButton.LeftButton:
+            widget = self.childAt(event.position().toPoint())
+            # Only initiate window drag if clicking on empty titlebar space or titlebar widget
+            if widget is None or widget in (self.central_widget, self.top_row_widget) or getattr(widget, "is_titlebar_drag", False) or (widget and widget.objectName() in ("titleBarRow", "tabBarRow")):
+                self.dragPos = event.globalPosition().toPoint()
+                event.accept()
+                return
+        super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
-        if hasattr(self, 'dragPos') and event.buttons() == Qt.MouseButton.LeftButton and event.pos().y() < 120:
+        if hasattr(self, 'dragPos') and self.dragPos and event.buttons() == Qt.MouseButton.LeftButton:
             self.move(self.pos() + event.globalPosition().toPoint() - self.dragPos)
             self.dragPos = event.globalPosition().toPoint()
             event.accept()
+            return
+        super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        self.dragPos = None
+        super().mouseReleaseEvent(event)
 
     def setup_shortcuts(self):
         QShortcut(QKeySequence("Ctrl+T"), self).activated.connect(self.tabs.add_new_tab)
