@@ -1,0 +1,100 @@
+name: Build & Release Searcher Browser
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact_name: SearcherBrowser-Windows.zip
+            asset_name: SearcherBrowser-Windows.zip
+          - os: macos-latest
+            artifact_name: SearcherBrowser-macOS.zip
+            asset_name: SearcherBrowser-macOS.zip
+          - os: ubuntu-latest
+            artifact_name: SearcherBrowser-Linux.zip
+            asset_name: SearcherBrowser-Linux.zip
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller pillow
+
+      - name: Generate Application Icon
+        run: |
+          python -c "from PIL import Image; img = Image.open('assets/logo.png'); img.save('assets/logo.ico', format='ICO')"
+
+      - name: Build Executable with PyInstaller
+        run: |
+          pyinstaller SearcherBrowser.spec
+
+      - name: Package Binary (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          Compress-Archive -Path dist/SearcherBrowser/* -DestinationPath dist/SearcherBrowser-Windows.zip
+
+      - name: Package Binary (macOS / Linux)
+        if: runner.os != 'Windows'
+        run: |
+          cd dist && zip -r ${{ matrix.asset_name }} SearcherBrowser/
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: dist/${{ matrix.asset_name }}
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/SearcherBrowser-Windows.zip/SearcherBrowser-Windows.zip
+            dist/SearcherBrowser-macOS.zip/SearcherBrowser-macOS.zip
+            dist/SearcherBrowser-Linux.zip/SearcherBrowser-Linux.zip
+          name: Searcher Browser Release ${{ github.ref_name }}
+          body: |
+            🚀 **Searcher Browser Release ${{ github.ref_name }}**
+            
+            ### Features included in this build:
+            - 🌐 **Automatic Offline Mode & Cache Serving** (`searcher-cache://`)
+            - 🤖 **Searcher AI Assistant** integrated into Start Page & Qt Sidebar
+            - 🔍 **Custom Multi-Source Searcher Engine** (Wikipedia + DuckDuckGo + Open Web)
+            - 🎨 **Modern Glassmorphic Dark Design System** with hand-crafted vector icons
+            - 🔖 **Interactive Start Page Modals** (Bookmarks, History, Downloads, Settings, Custom Shortcuts)
+            - 💻 **Cross-Platform Support** for Windows, macOS, and Linux
