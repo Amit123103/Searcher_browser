@@ -26,28 +26,49 @@ Whether you want a secondary browser for privacy, a developer tool for testing, 
 
 ---
 
-## 📥 Download Searcher Browser
+## 📥 Download Searcher Browser (Latest Release v1.4.0)
 
-> **Cross-platform support!** Choose your operating system below.
+> **Cross-Platform Support!** Download pre-built standalone binaries for your operating system below. No complex setups needed!
 
-### 🪟 Windows
-- **Option 1 (Recommended):** Download `SearcherBrowserInstaller.exe` → Double-click → Follow installer
-- **Option 2 (Portable):** Download `Searcher.exe` → Double-click and run directly (no installation)
+| Platform | Recommended Download Package | Direct Release Link |
+|---|---|---|
+| 🪟 **Windows** | `SearcherBrowser-Windows.zip` or `Searcher.exe` | [⬇️ Download for Windows](https://github.com/Amit123103/Searcher_browser/releases/latest) |
+| 🍎 **macOS** | `SearcherBrowser-macOS.zip` or `Searcher.dmg` | [⬇️ Download for macOS](https://github.com/Amit123103/Searcher_browser/releases/latest) |
+| 🐧 **Linux** | `SearcherBrowser-Linux.zip` or `Searcher.AppImage` | [⬇️ Download for Linux](https://github.com/Amit123103/Searcher_browser/releases/latest) |
+| 📱 **Mobile (Android/iOS)** | `SearcherBrowser-Mobile-PWA.zip` | [⬇️ Download Mobile Package](https://github.com/Amit123103/Searcher_browser/releases/latest) |
 
-### 🍎 macOS  
-- Download `Searcher.dmg` → Double-click to mount → Drag "Searcher" app to Applications → Launch!
+---
 
-### 🐧 Linux
-- Download `Searcher.AppImage` → Right-click → Properties → Permissions → Check "Execute" → Double-click to run
-- Or: `chmod +x Searcher.AppImage && ./Searcher.AppImage`
+### 🚀 Platform Quick Start & Installation
 
-### 📱 Mobile Phone (Android & iOS)
-- **Option 1 (Instant Mobile Web App):** Open `SearcherBrowser-Mobile-PWA.zip` or `start_page.html` in Chrome/Safari on your mobile phone → Tap browser menu → Tap **"Add to Home Screen"** to install Searcher Browser as a native mobile app!
-- **Option 2 (Android APK Build):** Compile using `mobile/buildozer.spec` to create a native Android `.apk` for direct installation.
+#### 🪟 Windows
+1. Go to [Latest Releases](https://github.com/Amit123103/Searcher_browser/releases/latest).
+2. Download **`SearcherBrowser-Windows.zip`** (or portable `Searcher.exe`).
+3. Extract the `.zip` file and double-click **`SearcherBrowser.exe`** to launch!
 
-### 🔗 [⬇️ Download Latest Release](https://github.com/Amit123103/Searcher_browser/releases)
+#### 🍎 macOS
+1. Go to [Latest Releases](https://github.com/Amit123103/Searcher_browser/releases/latest).
+2. Download **`SearcherBrowser-macOS.zip`** or **`Searcher.dmg`**.
+3. Double-click the `.dmg` file to mount it, then drag **`Searcher.app`** into your **Applications** folder.
+4. Launch Searcher from Applications!
 
-Visit the releases page above to download your platform's version!
+#### 🐧 Linux
+1. Go to [Latest Releases](https://github.com/Amit123103/Searcher_browser/releases/latest).
+2. Download **`Searcher.AppImage`** or **`SearcherBrowser-Linux.zip`**.
+3. Grant execute permission:
+   ```bash
+   chmod +x Searcher.AppImage
+   ./Searcher.AppImage
+   ```
+
+#### 📱 Mobile Phone (Android & iPhone / iPad)
+1. Download **`SearcherBrowser-Mobile-PWA.zip`** from [Latest Releases](https://github.com/Amit123103/Searcher_browser/releases/latest).
+2. Extract the package and open `assets/start_page.html` or `mobile/index.html` in Chrome/Safari on your mobile device.
+3. Tap the browser menu → Select **"Add to Home Screen"** to install Searcher Browser as a standalone mobile app!
+4. *(Optional for Android Developers)* Compile `mobile/buildozer.spec` with Kivy/Buildozer to output a native `.apk`.
+
+👉 **[🌐 View All Releases & Downloads on GitHub](https://github.com/Amit123103/Searcher_browser/releases)**
+
 
 ---
 
