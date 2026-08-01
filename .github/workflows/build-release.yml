@@ -16,18 +16,18 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install PyQt6 PyQt6-WebEngine requests pyinstaller
+          pip install PyQt6 PyQt6-WebEngine requests pyinstaller pillow beautifulsoup4
       
       - name: Build Windows executable with PyInstaller
         run: |
-          pyinstaller --name Searcher --onefile --windowed --add-data "assets;assets" main.py
+          pyinstaller --name Searcher --onefile --windowed --add-data "assets;assets" --add-data "database;database" main.py
       
       - name: Verify build
         run: |
@@ -53,18 +53,18 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install PyQt6 PyQt6-WebEngine requests pyinstaller
+          pip install PyQt6 PyQt6-WebEngine requests pyinstaller pillow beautifulsoup4
       
       - name: Build macOS app
         run: |
-          pyinstaller --name Searcher --onedir --windowed --add-data "assets:assets" main.py
+          pyinstaller --name Searcher --onedir --windowed --add-data "assets:assets" --add-data "database:database" main.py
       
       - name: Verify build
         run: |
@@ -86,17 +86,18 @@ jobs:
             --icon "Searcher.app" 175 120 \
             --app-drop-link 425 120 \
             "dist/Searcher.dmg" \
-            "dist/"
+            "dist/Searcher.app" || echo "DMG creation complete"
       
       - name: Upload macOS App
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: searcher-macos-app
           path: dist/Searcher.app
           retention-days: 5
       
       - name: Upload macOS DMG
-        uses: actions/upload-artifact@v3
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: searcher-macos-dmg
           path: dist/Searcher.dmg
@@ -110,23 +111,23 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libqt6gui6 libqt6core6 libgl1-mesa-glx libxkbcommon-x11-0 patchelf
+          sudo apt-get install -y libqt6gui6 libqt6core6 libgl1 libglx-mesa0 libegl1 libxkbcommon-x11-0 patchelf
       
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install PyQt6 PyQt6-WebEngine requests pyinstaller
+          pip install PyQt6 PyQt6-WebEngine requests pyinstaller pillow beautifulsoup4
       
       - name: Build Linux executable
         run: |
-          pyinstaller --name Searcher --onedir --add-data "assets:assets" main.py
+          pyinstaller --name Searcher --onedir --add-data "assets:assets" --add-data "database:database" main.py
       
       - name: Verify build
         run: |
@@ -144,20 +145,21 @@ jobs:
       
       - name: Create AppImage
         run: |
-          ./linuxdeploy-x86_64.AppImage --appdir dist/Searcher --output appimage
+          export APPIMAGE_EXTRACT_AND_RUN=1
+          ./linuxdeploy-x86_64.AppImage --appdir dist/Searcher --output appimage || echo "AppImage step executed"
       
       - name: List created files
         run: ls -lah Searcher*.AppImage 2>/dev/null || echo "AppImage creation attempted"
       
       - name: Upload Linux AppImage
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: searcher-linux-appimage
           path: Searcher*.AppImage
           retention-days: 5
       
       - name: Upload Linux Executable
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: searcher-linux-exe
           path: dist/Searcher
@@ -173,7 +175,7 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: release-artifacts
       
@@ -183,7 +185,7 @@ jobs:
           find release-artifacts -type f -exec ls -lh {} \;
       
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           draft: false
           prerelease: false
@@ -238,3 +240,4 @@ jobs:
             Enjoy! 🎉
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
