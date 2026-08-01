@@ -41,11 +41,16 @@ Whether you want a secondary browser for privacy, a developer tool for testing, 
 - Download `Searcher.AppImage` → Right-click → Properties → Permissions → Check "Execute" → Double-click to run
 - Or: `chmod +x Searcher.AppImage && ./Searcher.AppImage`
 
+### 📱 Mobile Phone (Android & iOS)
+- **Option 1 (Instant Mobile Web App):** Open `SearcherBrowser-Mobile-PWA.zip` or `start_page.html` in Chrome/Safari on your mobile phone → Tap browser menu → Tap **"Add to Home Screen"** to install Searcher Browser as a native mobile app!
+- **Option 2 (Android APK Build):** Compile using `mobile/buildozer.spec` to create a native Android `.apk` for direct installation.
+
 ### 🔗 [⬇️ Download Latest Release](https://github.com/Amit123103/Searcher_browser/releases)
 
 Visit the releases page above to download your platform's version!
 
 ---
+
 
 ## 🚀 How to Install & Use Searcher Browser
 

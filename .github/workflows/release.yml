@@ -1,4 +1,4 @@
-name: Build & Release Searcher Browser
+name: Build & Release Searcher Browser (Desktop & Mobile)
 
 on:
   push:
@@ -66,9 +66,28 @@ jobs:
           name: ${{ matrix.artifact_name }}
           path: dist/${{ matrix.asset_name }}
 
+  build-mobile:
+    name: Package Searcher Mobile Browser (PWA / Android App Package)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create Mobile App Zip Package
+        run: |
+          mkdir -p dist_mobile/SearcherBrowser-Mobile
+          cp -r assets assets/manifest.json assets/sw.js mobile/ dist_mobile/SearcherBrowser-Mobile/
+          cd dist_mobile && zip -r SearcherBrowser-Mobile-PWA.zip SearcherBrowser-Mobile/
+
+      - name: Upload Mobile Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SearcherBrowser-Mobile-PWA.zip
+          path: dist_mobile/SearcherBrowser-Mobile-PWA.zip
+
   release:
     name: Publish GitHub Release
-    needs: build
+    needs: [build, build-mobile]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     steps:
@@ -87,14 +106,21 @@ jobs:
             dist/SearcherBrowser-Windows.zip/SearcherBrowser-Windows.zip
             dist/SearcherBrowser-macOS.zip/SearcherBrowser-macOS.zip
             dist/SearcherBrowser-Linux.zip/SearcherBrowser-Linux.zip
+            dist/SearcherBrowser-Mobile-PWA.zip/SearcherBrowser-Mobile-PWA.zip
           name: Searcher Browser Release ${{ github.ref_name }}
           body: |
             🚀 **Searcher Browser Release ${{ github.ref_name }}**
             
-            ### Features included in this build:
+            ### Available Downloads:
+            - 🪟 **Windows**: `SearcherBrowser-Windows.zip`
+            - 🍎 **macOS**: `SearcherBrowser-macOS.zip`
+            - 🐧 **Linux**: `SearcherBrowser-Linux.zip`
+            - 📱 **Mobile Phone (Android / iOS / PWA)**: `SearcherBrowser-Mobile-PWA.zip`
+            
+            ### Features included in this release:
+            - 📱 **Mobile Phone Web Browser & Standalone PWA Support** (Install directly on Android / iPhone)
             - 🌐 **Automatic Offline Mode & Cache Serving** (`searcher-cache://`)
-            - 🤖 **Searcher AI Assistant** integrated into Start Page & Qt Sidebar
+            - 🤖 **Searcher AI Assistant** integrated into Start Page & Mobile Navigation
             - 🔍 **Custom Multi-Source Searcher Engine** (Wikipedia + DuckDuckGo + Open Web)
-            - 🎨 **Modern Glassmorphic Dark Design System** with hand-crafted vector icons
-            - 🔖 **Interactive Start Page Modals** (Bookmarks, History, Downloads, Settings, Custom Shortcuts)
-            - 💻 **Cross-Platform Support** for Windows, macOS, and Linux
+            - 🎨 **Modern Responsive Mobile/Desktop Design System** with hand-crafted vector icons
+            - 🔖 **Interactive Modals & Custom Shortcuts** (Bookmarks, History, Downloads, Settings)
